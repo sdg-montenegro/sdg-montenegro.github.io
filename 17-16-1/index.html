@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="cnr" class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+        <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=Promise%2CArray.prototype.forEach%2CString.prototype.includes%2CURLSearchParams%2CCustomEvent%2CArray.prototype.includes%2CArray.prototype.filter%2CArray.prototype.some%2CArray.prototype.find%2CArray.prototype.reduce%2CObject.assign%2CArray.isArray%2CObject.values%2CObject.entries%2CArray.from%2CSet%2CArray.prototype.findIndex"></script>
+<script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.15.0/js/canvas-to-blob.min.js"></script>
+
+        <script>
+// This is where we initialise any global variables, namespaced in "opensdg".
+var opensdg = {
+
+  // A base URL for asynchronous calls to SDG data.
+  remoteDataBaseUrl: 'https://sdg-montenegro.github.io/sdg-production-data/cnr',
+
+  chartConfigAlterations: [],
+  // A hook which can be used to modify the configuration for Chart.js.
+  chartConfigAlter: function(callback) {
+    this.chartConfigAlterations.push(callback);
+  },
+
+  tableConfigAlterations: [],
+  // A hook which can be used to modify the configuration for Datatables.
+  tableConfigAlter: function(callback) {
+    this.tableConfigAlterations.push(callback);
+  },
+
+  // A hook which can be replaced to alter whether/how the values that are
+  // displayed on indicator tables/graphs get rounded.
+  dataRounding: function(value) {
+    // Alterations go here.
+    return value;
+  },
+
+  // A hook which can be used to alter the data before it is displayed on charts/tables.
+  dataDisplayAlterations: [],
+  dataDisplayAlter: function(callback) {
+    this.dataDisplayAlterations.push(callback);
+  },
+
+  language: 'cnr',
+};
+
+</script>
+
+        <script>
+// JavaScript container for translation data.
+var translations = {
+  //Javascript version of the "t" filter from jekyll-open-sdg-plugins.
+  t: function(key) {
+
+    if (!key || typeof key !== 'string') {
+      return '';
+    }
+
+    // The majority of uses of this function are to translate disaggregation
+    // data. To spare data providers of needing to enter "data." in front of
+    // their disaggregation data, we specifically look for that here.
+    if (typeof this.data === 'object' && this.data !== null && this.data[key]) {
+      return this.data[key];
+    }
+
+    var originalKey = key;
+    var drilled = this;
+    var levelsDrilled = 0;
+    var levels = key.split('.');
+
+    for (var level in levels) {
+      // If we have drilled down to soon, abort.
+      if (typeof drilled !== 'object') {
+        break;
+      }
+
+      if (levels[level] in drilled) {
+        drilled = drilled[levels[level]];
+        levelsDrilled += 1;
+      }
+    }
+
+    // If we didn't drill the right number of levels, return the original string.
+    if (levels.length != levelsDrilled) {
+      return originalKey;
+    }
+
+    // Otherwise we must have drilled all the way.
+    return drilled;
+  },
+};
+</script>
+
+        <!-- Basic Page Needs
+        ================================================== -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"><!-- Mobile Specific Metas
+        ================================================== -->
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Title and meta description
+        ================================================== -->
+
+        
+    <title>
+        
+        Indikator 17.16.1 -
+        
+        Broj zemalja koje izvještavaju o napretku u okvirima za praćenje efektivnosti razvoja sa više zainteresovanih strana koji podržavaju postizanje ciljeva održivog razvoja - Indikatori za Ciljeve održivog razvoja
+    </title>
+
+
+
+        <meta name="description" content="">
+        <meta property="og:description" content="">
+        
+        <link rel="canonical" href="/">
+
+        <!--[if IE 9]>
+        <script src="/assets/js/lib/classList.js"></script>
+        <![endif]-->
+
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png">
+<link rel="icon" type="image/x-icon" href="/assets/img/favicons/favicon.ico" />
+
+
+        
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <link res="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" crossorigin="">
+        <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.2.3/css/fixedColumns.dataTables.min.css" crossorigin="">
+        <link rel="stylesheet" href="/assets/css/style.css?v=20221020124320">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+          integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+          crossorigin=""/>
+        <link rel="stylesheet" href="https://cdn.rawgit.com/socib/Leaflet.TimeDimension/master/dist/leaflet.timedimension.control.min.css"  crossorigin=""/>
+        <link rel="stylesheet" href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css'  crossorigin=""/>
+        <link rel="stylesheet" href="https://bowercdn.net/c/leaflet.zoomhome-latest/dist/leaflet.zoomhome.css"  crossorigin=""/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@2.9.7/dist/leaflet-search.min.css" crossorigin="">
+        <link rel="stylesheet" href="https://cdn.kiprotect.com/klaro/v0.7/klaro.min.css" crossorigin=""/>
+        
+
+        <!--[if IE]>
+        <link rel="stylesheet" href="/assets/css/ie.css">
+        <![endif]-->
+
+        
+
+    </head>
+<body class="language-cnr
+layout-indicator
+">
+<!-- <div class="container"> -->
+
+<script>translations['header'] = {"alpha":"Alfa","default_contrast":"Podrazumijevani kontrast","disable_high_contrast":"Onemogućite visoki kontrast","disclaimer":"Ovo je razvojna web stranica. Dobrodošle su vaše <a href=\"mailto:%email_contacts.suggestions\">povratne informacije</a>.","enable_high_contrast":"Omogućite visoki kontrast","high_contrast":"Visoki kontrast","internet_explorer_message":"Otkrili smo da koristite Internet Ekplorer da biste posjetili ovu web stranicu. Microsoft sada ukida Internet Ekplorer. Kao rezultat toga, ova web lokacija više ne podržava nijednu verziju Internet Ekplorer-a. Neke funkcije na ovom sajtu neće raditi. Trebalo bi da koristite moderan pretraživač kao što je Edge, Chrome, Firefox ili Safari. Ako imate poteškoća sa instaliranjem ili pristupom drugom pretraživaču, kontaktirajte svoj tim za IT podršku.","internet_explorer_message_title":"Ovaj internet pretraživač više nije podržan","skip_link":"Preskoči na glavni sadržaj","tag_line":"17 ciljeva za transformaciju našeg svijeta","toggle_menu":"Podešavanje menija. Kliknite da biste proširili ili skupili meni.","toggle_search":"Podešavanje pretrage. Kliknite da proširite ili suzite traku za pretraživanje."};</script>
+
+<a class="sr-only-focusable" id="skiplink" href="#main-content" tabindex="0">Preskoči na glavni sadržaj</a>
+<div class="container internet-explorer-message">
+    <h2 class="internet-explorer-message-title">Ovaj internet pretraživač više nije podržan</h2>
+    <p class="internet-explorer-message-body">Otkrili smo da koristite Internet Ekplorer da biste posjetili ovu web stranicu. Microsoft sada ukida Internet Ekplorer. Kao rezultat toga, ova web lokacija više ne podržava nijednu verziju Internet Ekplorer-a. Neke funkcije na ovom sajtu neće raditi. Trebalo bi da koristite moderan pretraživač kao što je Edge, Chrome, Firefox ili Safari. Ako imate poteškoća sa instaliranjem ili pristupom drugom pretraživaču, kontaktirajte svoj tim za IT podršku.</p>
+</div>
+<div id="disclaimer">
+    
+<div class="container">
+  <div class="disclaimer-alert">
+    <strong class="phase-tag">Alfa</strong>
+    
+    Ovo je razvojna web stranica. Dobrodošle su vaše <a href="mailto:montenegrosdg@gmail.com">povratne informacije</a>.
+    
+  </div>
+</div>
+
+</div>
+
+<header role="banner" class="">
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light flex-wrap align-items-start">
+            <a class="navbar-brand" href="/" id="home">
+    <img src="/assets/img/logo/cnr/SDG_logo.png" alt="Crna Gora" />
+</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="d-flex flex-wrap w-100 justify-content-between">
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav" id="menu"><li class="nav-item ">
+    <a class="nav-link" href="/goals">Ciljevi</a>
+</li><li class="nav-item ">
+    <a class="nav-link" href="/reporting-status">Status izvještavanja</a>
+</li><li class="nav-item ">
+    <a class="nav-link" href="/about">O nama</a>
+</li><li class="nav-item ">
+    <a class="nav-link" href="/news">Novosti</a>
+</li></ul>
+    
+                </div>
+                <div class="header-search-bar">
+                    <form class="align-self-lg-end" id="search" action="/search/">
+    <div class="input-group">
+        <label class="visually-hidden" for="indicator_search">Pretraga</label>
+        <input class="form-control" type="search" name="q" id="indicator_search" title="Pretraga">
+        <span class="input-group-append">
+            <button class="btn btn-outline-secondary ms-n5" aria-label="Pretraga" id="search-btn" type="submit">
+                <i class="fa fa-search"></i>
+            </button>
+        </span>
+    </div>
+</form>
+
+                </div>
+                <div class="header-toggles d-flex">
+
+
+
+
+
+  <div class="language-toggle-container">
+  
+  <div class="btn-group language-toggle-dropdown  dropdown">
+    <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="fa fa-globe"></i>
+      Crnogorski
+    </button>
+    <ul class="dropdown-menu"><li>
+            <a class="dropdown-item" href="/en/17-16-1/">
+              Engleski
+            </a>
+          </li></ul>
+  </div>
+</div>
+
+
+
+                    <span class="no-js-language-toggle"><div class="language-toggle-container d-flex">
+    <i class="fa fa-globe language-toggle-globe-links"></i>
+    <ul class="language-toggle-links list-unstyled list-inline"><li class="language-option-en list-inline-item">
+            <a class="language-toggle-link" href="/en/17-16-1/">
+                Engleski
+            </a>
+        </li></ul>
+</div></span><a title="Omogućite visoki kontrast" aria-label="Omogućite visoki kontrast"
+    data-contrast-switch-to="" href="javascript:void(0)" data-on="click"
+data-event-category="Accessibility"
+data-event-action="Change contrast setting"
+data-event-label="high"
+>A</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</header>
+<div id="top" tabindex=-1></div>
+
+
+
+<script type="text/template" id="item_template">
+  <% _.each(fields, function(fieldItem) { %>
+    <div class="variable-selector
+      <% if(allowedFields.indexOf(fieldItem.field) == -1) { %> disallowed <% }%>
+      <% if (typeof childFields !== 'undefined' && childFields.indexOf(fieldItem.field) !== -1) { %> child <% }%>
+      "
+      data-field="<%=fieldItem.field%>"
+    >
+      <button class='accessBtn' tabindex='0' aria-expanded='false'
+        <% if(allowedFields.indexOf(fieldItem.field) == -1) { %>
+        aria-describedby='variable-hint-<%=fieldItem.field.replace(/ /g, '-')%>'
+        <% }%>
+      >
+        <% if(allowedFields.indexOf(fieldItem.field) == -1) { %><h6><% } else { %><h5><% } %>
+          <span aria-hidden="true"><%=translations.t(fieldItem.label)%><i class="fa fa-chevron-down"></i></span>
+          <span class="sr-only">Prikaži potkategorije: <%=translations.t(fieldItem.label)%></span>
+        <% if(allowedFields.indexOf(fieldItem.field) == -1) { %></h6><% } else { %></h5><% } %>
+      </button>
+      <div class="variable-options">
+        <fieldset>
+          <legend class="sr-only">Potkategorije - <%=translations.t(fieldItem.field)%></legend>
+          <div>
+            <button data-type="select">Označi sve</button>
+            <button data-type="clear">Obriši sve</button>
+          </div>
+          <% _.each(fieldItem.values, function(item) { %>
+            <label>
+              <input type="checkbox" <%=item.checked ? 'checked' : ''%> value="<%=item.value%>" data-field="<%=fieldItem.field%>" /><%=translations.t(item.value)%>
+            </label>
+          <% }); %>
+        </fieldset>
+      </div>
+
+      <% if(allowedFields.indexOf(fieldItem.field) == -1) { %>
+        <div class="variable-hint" id="variable-hint-<%=fieldItem.field.replace(/ /g, '-')%>">Dostupno kada je odabrano '<%= translations.t(_.find(edges, { To: fieldItem.field }).From) %>'
+        </div>
+        <div class="no-data-hint" id="no-data-hint-<%=fieldItem.field.replace(/ /g, '-')%>">
+          Nema dostupnih opcija zbog gornjih filtera
+        </div>
+      <% }%>
+
+    </div>
+  <% }); %>
+</script>
+
+<script type="text/template" id="units_template">
+  
+  <% if(units.length > 1) { %>
+  
+    <h4>Jedinica mjere</h4>
+    <fieldset>
+      <legend class="sr-only">Jedinica mjere</legend>
+      <% _.each(units, function(unitsItem, index) { %>
+        <% var checked = (selectedUnit) ? (selectedUnit==unitsItem) : (index==0); %>
+        <label><input type="radio" name="unit" value="<%=unitsItem%>" tabindex=0 <%=checked ? 'checked' : ''%> /> <%=translations.t(unitsItem)%></label>
+      <% }); %>
+    </fieldset>
+  
+  <% } %>
+  
+</script>
+
+<script type="text/template" id="series_template">
+  
+  <% if(serieses.length > 1) { %>
+  
+    <h4>Niz</h4>
+    <fieldset>
+      <legend class="sr-only">Niz</legend>
+      <% _.each(serieses, function(seriesItem, index) { %>
+        <% var checked = (selectedSeries) ? (selectedSeries==seriesItem) : (index==0); %>
+        <label><input type="radio" name="series" value="<%=seriesItem%>" tabindex=0 <%=checked ? 'checked' : ''%> /> <%=translations.t(seriesItem)%></label>
+      <% }); %>
+    </fieldset>
+  
+  <% } %>
+  
+</script>
+
+<script>translations['indicator'] = {"annotation_2030_target":"Cilj indikatora 2030","annotation_series_break":"Prekid niza","announce_data_added":"Grafik i tabela su ažurirani kako bi uključili podatke.","announce_data_not_available":"Na grafiku i tabeli nema podataka.","announce_data_removed":"Grafik i tabela su ažurirani kako bi se isključili podaci.","apply":"Primijeniti","cancel":"Poništiti","change_breakdowns":"Promjena kvarova","chart":"Grafik","chart_annotation":"Označavanje grafika","clear_all":"Obriši sve","clear_selections":"Obrišite odabire","data_keyboard_navigation":"Pritisnite enter da biste pretraživali podatke pomoću tipki sa strelicama lijevo i desno.","data_not_available":"Ovi podaci nijesu dostupni. Molimo odaberite alternativne podatke za prikaz.","data_tabular_alternative":"Kao alternativu tabelarnih podataka pogledajte Tabelu.","dataset_size_warning":"Previše je skupova podataka za prikaz na grafiku. Neće se sve prikazati dok ne uklonite neke odabire.","download_chart":"Preuzmite CSV grafik","download_chart_image":"Preuzmite sliku grafika","download_chart_image_title":"Preuzmite grafik kao sliku","download_csv":"Preuzmite CSV","download_csv_title":"Preuzmite kao CSV","download_geojson":"Preuzmite GeoJSON","download_geojson_title":"Preuzmite kao GeoJSON","download_headline":"Preuzmite naslovni CSV","download_headline_title":"Preuzmite podatke naslova kao CSV","download_source":"Preuzmite izvorni CSV","download_source_for_disaggregations":"Preuzmite izvorni CSV za disagregacije","download_source_sdmx":"Preuzmite izvorni SDMX","download_source_sdmx_title":"Preuzmite izvorne podatke kao SDMX","download_source_title":"Preuzmite izvorne podatke kao CSV","download_table":"Preuzmite CSV tabelu","edit":"Urediti","edit_configuration":"Urediti konfiguraciju","edit_data":"Urediti podatke","edit_metadata":"Urediti metapodatke","footnote":"Fusnota","geographical_area":"Geografsko područje","global_metadata":"Globalni metapodaci","global_metadata_blurb":"Ova tabela pruža informacije o metapodacima za COR indikatore koje je definisala Statistička komisija UN-a. <a href=\"https://unstats.un.org/sdgs/metadata/\">Kompletne globalne metapodatke</a> obezbjeđuje Odjeljenje za statistiku UN-a.","headline_data":"Naslovni podaci","legend_help":"Kliknite na legendu da uklonite pojedinačne linije sa grafika.","loading":"Učitavanje","loading_map":"Učitavanje mape","map":"Mapa","map_search":"Pretraga","map_search_hide":"Sakrij pretragu","map_search_show":"Prikaži pretragu","map_year_slider":"Klizač za godinu","national_metadata":"Nacionalni metapodaci","national_metadata_blurb":"Ova tabela pruža više informacija o indikatoru koji je dostupan iz crnogorske statistike a najbliže odgovara globalnom indikatoru COR. Imajte na umu da i kada je globalni indikator COR u potpunosti dostupan iz crnogorske statistike, ovu tabelu treba konsultovati za informacije o nacionalnoj metodologiji i druge informacije o crnogorskim metapodacima.","next":"Sljedeći indikator","no_data_hint":"Nema dostupnih opcija zbog gornjih filtera","no_headline_data":"Nema dostupnih naslovnih podataka","plot_legend_description":"Legenda grafika: lista linija uključenih u grafik","previous":"Prethodni indikator","select_all":"Označi sve","series":"Niz","series_help":"Odaberite kategorije iz padajućih menija u nastavku da vidite različite tipove podataka. Neki podaci neće biti dostupni dok se ne odabere viši nivo pretrage.","source":"Izvor","sources":"Izvori","status":"Status indikatora","sub_categories":"Potkategorije","sub_categories_show":"Prikaži potkategorije:","table":"Tabela","table_column_sort":"Kliknite da biste sortirali po ovoj koloni","tags":"Oznake","unit":"Jedinica","unit_of_measurement":"Jedinica mjere","units_type":"Tip jedinica","variable_hint":"Dostupno kada je odabrano '%field'","view_indicator_list":"Pogledajte listu indikatora ovog cilja"};</script>
+
+<script>translations['data'] = {"1_2_gjr":"1-2 GJR","2_3_gjr":"2-3 GJR","Administrative head":"Administrativna cjelina","Age":"Starost","Andrijevica":"Andrijevica","Bar":"Bar","Bar UB":"Bar UB","Berane":"Berane","Berane (sa Petnjicom)":"Berane (sa Petnjicom)","Bijelo Polje":"Bijelo Polje","Budva":"Budva","Category":"Kategorija","Census":"Popis stanovništva i domaćinstava","Cetinje":"Cetinje","Convention":"Konvencija","Count":"Brojnost","Danilovgrad":"Danilovgrad","Density":"Gustina","Economic class":"Klase ekonomske veličine gazdinstava 2010. godina","Economic head":"Ekonomska cjelina","Female":"Žene","Herceg Novi":"Herceg Novi","Institution":"Institucija","Kolasin":"Kolašin","Kotor":"Kotor","LSU class":"Uslovno grlo LSU","Location":"Lokacija","Male":"Muškarci","Mojkovac":"Mojkovac","Niksic":"Nikšić","Niksic UB":"Nikšić UB","Plav (sa Gusinjem)":"Plav (sa Gusinjem)","Pljevlja":"Pljevlja","Pljevlja UB":"Pljevlja UB","Pluzine":"Plužine","Podgorica":"Podgorica","Podgorica UB":"Podgorica UB","Podgorica UT":"Podgorica UT","Register":"Registar rođenih/umrlih","Roma settlements":"Romska naselja","Rozaje":"Rožaje","Sex":"Pol","Size class":"Veličina razreda prema korišćenom poljoprivrednom zemljištu (ha)","Summary sheet 1":"Sumirano - Obračunski list za dimenzije PI-1.1, PI-2.1 i PI-2.3","Summary sheet 2":"Sumirano - Obračun rashoda po varijansama ekonomske klasifikacije PI-2.2","Tivat":"Tivat","Ulcinj":"Ulcinj","Units":"Jedinica","Value":"Vrijednost","Year":"Godina","Zabljak":"Žabljak","accreditation":"akreditacija (1 označava akreditaciju A)","adult":"odrasli","adults_15":"odraslih ljudi (15+)","advanced_spread_sheets":"Upotreba naprednih funkcija softvera za tabelarnu obradu podataka za organiziranje i analizu podataka, kao što je sortiranje, filtriranje, korišćenje formula, kreiranje grafikona","aged 0-15 years":"manje od 15 godina","aged 0-17 years":"Manje od 18 godina","aged 0-18 years":"manje od 18 godina","aged 15-24 years":"15-24 godine","aged 18-24 years":"18-24 godine","aged 18-64 years":"18-64 godine","aged 25-54 years":"25-54 godine","aged 25-64 years":"25-64 godine","aged 55-64 years":"55-64 godine","aged over 65 years":"65 ili više godina","air_traffic":"avio saobraćaj","atms":"bankomati","basel_convention":"Baselska konvencija","basel_convention_1":"Označavanje kontakt osobe i jednu ili više nadležnih organa","basel_convention_2":"Podnošenje godišnjih nacionalnih izvještaja tokom izvještajnog perioda","branches_of_commercial_banks":"filijale poslovnih banaka","change_settings":"Promjena postavki softvera, uključujući operativni sistem ili sigurnosne programe","class_2_3":"razredi 2/3","collected_waste":"sakupljen otpad","companies":"Preduzeća","compensation_employees":"Kompenzacija zaposlenih","composition_variance":"varijansa kompozicije","conventional_agriculture":"Konvencionalna obrada","copy_files":"Kopiranje ili premještanje datoteka ili foldera","dental staff":"stomatološko osoblje","economic_class_15000_25000":"15000-25000","economic_class_2000_4000":"2000-4000","economic_class_4000_8000":"4000-8000","economic_class_8000_15000":" 8000-15000","economic_class_less_2000":"< 2000","economic_class_more_25000":"> 25000","eur":"EUR","family_agriculture":"Porodična poljoprivredna gazdinstva","farms":"gazdinstva","farms_pp_2010":"Gazdinstva PP 2010 - hektari","farms_spg_2016":"Gazdinstva SPG 2016 - hektari","fixed_capital":"Potrošnja fiksnog kapitala","fotografije":"korišćenje softvera za uređivanje fotografija, video ili audio datoteka","goods_services":"Upotreba robe i usluga","grants":"Grantovi","hazardous_waste":"Stvoreni opasni otpad po glavi stanovnika (kg)","health workers":"ljekari","hectares":"hektari","install_software":"Instaliranje softvera ili aplikacija","interest":"Kamatna stopa","international_bank_for_reconstruction":"Međunarodna banka za rekonstrukciju i razvoj","international_monetary_fund":"Međunarodni monetarni fond","less_1_gjr":"< 1 GJR","lower_high_school":"srednja škola","lsu":"LSU","manufacturing_value":"proizvodna vrijednost","maritime_traffic":"pomorski saobraćaj","maths":"matematika","minamata_convention":"Minamata konvencija","minamata_convention_1":"Označavanje nacionalne ključne tačke (član 17)","minamata_convention_2":"Podnošenje nacionalnog izvještaja (član 21)","mne_member":"Da li je CG član?","mne_vote":"Da li ima pravo glasa?","montreal_convention":"Montrealski protokol","montreal_convention_1":"Usklađenost sa zahtjevima za izvještavanje za proizvodnju i potrošnju ozonskog oštećenja suspstance prema članu 7 Montrealskog protokola","montreal_convention_2":"Podnošenje informacija o licencnim sistemima prema članu 4B Montrealskog protokola","more_3_gjr":"> 3 GJR","national_stat_plan_strategy":"Implementiranje strategije za uvođenje nacionalnog statističkog plana","number_of_farms":"Broj gazdinstava","nurses":"medicinske sestre i babice","ombudsman":"ombudsman","other_expenses":"Ostali troškovi","per_1000000_population":"na 1 000 000 ljudi","per_100000_adults":"na 100 000 odraslih ljudi","per_100000_population":"na 100 000 ljudi","per_1000_life_births":"na 1000 rođenih","per_1000_population":"na 1000 ljudi","per_1000_uninfected_population":"ukupno novoinficiranih na 1000 neinficiranih","per_1000_women":"na 1000 žena","per_capita_in_eur":"po glavi stanovnika, u EUR","per_capita_kg":"kg po glavi stanovnika","percent_of_gdp":"udio BDP-a","pharmaceutical staff":"farmaceutsko osoblje","pi_1":"ukupni rezultat (PI-1)","pi_2":"varijansa sastava (PI-2)","pm10":"PM 10","pm2.5":"PM 2.5","points":"bodovi","population":"populacija","population_census":"popis stanovništva i domaćinstava","prezentacije":"Kreiranje prezentacija ili dokumenata koji integrišu tekst, slike, tabele ili grafikone","primary_school":"osnovna škola","processed_hazardous_waste":"Obrađeni opasni otpad u ukupnoj stvorenoj količini opasnog otpada","processed_waste":"prerađen otpad + odloženi otpad na sanitarnim deponijama + privremeno uskladišteni otpad","produced_waste":"proizveden otpad","programiranje":"Pisanje koda u programskom jeziku","quantity":"količina","railway_traffic":"željeznički saobraćaj","reading":"čitanje","recycled_waste":"Reciklirane količine otpada (R2-R11 + izvoz)","register_of_births":"Upis u matičnu knjigu rođenih","register_of_deaths":"Upis u matičnu knjigu umrlih","road_traffic":"drumski saobraćaj","rotterdam_convention":"Roterdamska konvencija","rotterdam_convention_1":"Označavanje nadležnih nacionalnih organa i zvanične kontakt tačke","rotterdam_convention_2":"Podnošenje import odgovora tokom izvještajnog perioda (0.2 boda po import odgovoru)","savnik":"Šavnik","share_of_budget":"nepredviđeni dio budžeta","size_class_0.10_0.50":"0.10-0.50","size_class_0.50_1.00":"0.50-1.00","size_class_1.00_2.00":"1.00-2.00","size_class_10.00_15.00":"10.00-15.00","size_class_15.00_20.00":"15.00-20.00","size_class_2.00_3.00":"2.00-3.00","size_class_20.00_30.00":"20.00-30.00","size_class_3.00_4.00":"3.00-4.00","size_class_30.00_50.00":"30.00-50.00","size_class_4.00_5.00":"4.00-5.00","size_class_5.00_6.00":"5.00-6.00","size_class_50.00_100.00":"50.00-100.00","size_class_6.00_8.00":"6.00-8.00","size_class_8.00_10.00":"8.00-10.00","size_class_less_0.10":"<0.10","size_class_more_100.00":">100.00","social_benefits":"Socijalne beneficije","spread_sheets":"Korišćenje softvera za tabelarnu obradu podataka","stockholm_convention":"Stokholmska konvencija","stockholm_convention_1":"Označavanje zvanične kontakt tačke i nacionalne ključne tačke","stockholm_convention_2":"Podnošenje nacionalnog plana implementacije","stockholm_convention_3":"Podnošenje revidiranog nacionalnog plana/planova implementacije koji se odnose na usvojene izmjene i dopune od strane Konferencije stranaka u izvještajnom periodu (1 bod po revidiranom i ažuriranom planu)","subsidies":"Subvencije","teacher_class_1":"Broj nastavnika u predškolskom, osnovnom, opšte srednjem obrazovanju i opšteobrazovnim predmetima stručnog obrazovanja koji su pohađali barem minimalnu organizovanu obuku nastavnika (npr. pedagošku obuku) prije zaposlenja ili na radnom mjestu potrebnu za izvođenje nastave na odgovarajućem nivou u datoj zemlji","teacher_class_2":"Broj nastavnika u srednjem stručnom obrazovanju koji su pohađali barem minimalnu organizovanu obuku nastavnika (npr. pedagošku obuku) prije zaposlenja ili na radnom mjestu potrebnu za izvođenje nastave na odgovarajućem nivou u datoj zemlji","tons":"tone","tons_per_capita":"tone po glavi stanovnika","total":"ukupno","total_infected":"ukupno novoinficiranih","total_waste":"Ukupne stvorene količine otpada","traditional_agriculture":"Tradicionalna obrada","transfer_files":"Prenos datoteka između računara ili drugih uređaja","un_economic_social_council":"Ekonomski i socijalni savjet UN","un_general_assembly":"Generalna skupština UN","un_security_council":"Savjet bezbjednosti UN","waste_export":"Udio izvoza u ukupnoj obradi","waste_operation_d":"Udio operacija D u ukupnoj obradi","waste_operation_r":"Udio operacija R u ukupnoj obradi","without_agriculture":"Bez obrade","without_land":"Bez zemljišta","word_processing":"Korišćenje softvera za obradu teksta","world_trade_organization":"Svjetska trgovinska organizacija","yes_no":"da/ne","youth":"mladi"};</script>
+
+
+<div class="container">
+  
+<nav>
+    <ol aria-label="breadcrumb" class="breadcrumb" style="--bs-breadcrumb-divider: '&rsaquo;';">
+        
+        <li class="breadcrumb-item">
+            <a href="/">Naslovna</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="/goals">Ciljevi</a>
+        </li>
+        
+        <li class="breadcrumb-item">
+            <a href="/17" title="Unaprijediti sredstva za sprovođenje i obnoviti Globalno partnerstvo za održivi razvoj">Cilj 17</a>
+        </li>
+        
+    </ol>
+</nav>
+
+
+  
+</div>
+<div class="heading goal-banner indicator goal-17">
+    <div class="container">
+        <div class="row">
+            
+            <div class="col-4 col-md-3 col-lg-2 goal-icon goal-tiles">
+                <a href="/17" title="Pogledajte listu indikatora ovog cilja">
+                    <img src="https://montestat.github.io/site/assets/img/goals/cnr/17.png"
+                        alt="Partnerstvo za ciljeve - Cilj 17"
+                        id="goal-17"
+                        class="goal-icon-image goal-icon-image-" />
+                </a>
+            </div>
+            <div class="col-8 col-md-9 col-lg-10 indicator-details">
+            
+                <div>
+                    <h1>
+                        
+                        Indikator 17.16.1
+                        
+                        <span class="lead-copy">Broj zemalja koje izvještavaju o napretku u okvirima za praćenje efektivnosti razvoja sa više zainteresovanih strana koji podržavaju postizanje ciljeva održivog razvoja</span>
+                    </h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="main-content" class="container goal-17" role="main">
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+
+<div class="row"
+  id="indicatorData"
+  data-indicatorid='indicator_17-16-1'
+  data-id="17-16-1"
+  data-country="custom.country_name"
+  data-charttitle="Broj zemalja koje izvještavaju o napretku u okvirima za praćenje efektivnosti razvoja sa više zainteresovanih strana koji podržavaju postizanje ciljeva održivog razvoja"
+  data-charttitles="[]"
+  data-measurementunit=""
+  data-xaxislabel=""
+  data-showdata="false"
+  data-graphtype="line"
+  data-graphtypes="null"
+  data-geocoderegex=""
+  data-showmap="false"
+  data-startvalues="[]"
+  data-graphlimits="[]"
+  data-stackeddisaggregation=""
+  data-graphannotations="[]"
+  data-graphtargetlines="null"
+  data-graphseriesbreaks="null"
+  data-indicatordownloads="null"
+  data-dataschema="{&quot;fields&quot;:[{&quot;name&quot;:&quot;Year&quot;,&quot;type&quot;:&quot;number&quot;,&quot;title&quot;:&quot;Godina&quot;},{&quot;name&quot;:&quot;Value&quot;,&quot;type&quot;:&quot;number&quot;,&quot;title&quot;:&quot;Vrijednost&quot;}]}"
+  data-compositebreakdownlabel=""
+  data-precision="[]"
+>
+  
+  <div id="indicator-main" class="indicator-main col-md-12">
+  
+  <div class="mt-4">
+<ul class="nav nav-tabs" role="tablist">
+    
+    
+        
+        
+        
+        
+        <li role="presentation" class="nav-item">
+            <button
+                type="button"
+                class="nav-link active"
+                data-bs-toggle="tab"
+                id="tab-national"
+                data-bs-target="#national"
+                aria-controls="national"
+                role="tab"
+                data-on="click"
+data-event-category="Tab change"
+data-event-action="Change metadata view"
+data-event-label="Change to indicator.national_metadata tab"
+
+            >Nacionalni metapodaci</button>
+        </li>
+    
+        
+        
+        
+        
+        <li role="presentation" class="nav-item">
+            <button
+                type="button"
+                class="nav-link "
+                data-bs-toggle="tab"
+                id="tab-global"
+                data-bs-target="#global"
+                aria-controls="global"
+                role="tab"
+                data-on="click"
+data-event-category="Tab change"
+data-event-action="Change metadata view"
+data-event-label="Change to indicator.global_metadata tab"
+
+            >Globalni metapodaci</button>
+        </li>
+    
+        
+        
+        
+        
+        <li role="presentation" class="nav-item">
+            <button
+                type="button"
+                class="nav-link "
+                data-bs-toggle="tab"
+                id="tab-sources"
+                data-bs-target="#sources"
+                aria-controls="sources"
+                role="tab"
+                data-on="click"
+data-event-category="Tab change"
+data-event-action="Change metadata view"
+data-event-label="Change to indicator.sources tab"
+
+            >Izvori</button>
+        </li>
+    
+    
+    
+</ul>
+
+<div class="tab-content">
+    
+        
+        
+        
+        
+        
+        <div role="tabpanel" class="tab-pane active" id="national">
+            <article>
+                <p>Ova tabela pruža više informacija o indikatoru koji je dostupan iz crnogorske statistike a najbliže odgovara globalnom indikatoru COR. Imajte na umu da i kada je globalni indikator COR u potpunosti dostupan iz crnogorske statistike, ovu tabelu treba konsultovati za informacije o nacionalnoj metodologiji i druge informacije o crnogorskim metapodacima.</p>
+
+                <table class="table">
+  
+  
+  
+  
+  
+      
+        
+          
+      
+        
+          
+      
+        
+          
+      
+        
+          
+      
+        
+          
+      
+        
+          
+      
+        
+          
+      
+        
+          
+      
+        
+          
+      
+        
+          
+      
+        
+          
+  
+  
+</table>
+
+            </article>
+        </div>
+        
+        
+        
+        
+        
+        <div role="tabpanel" class="tab-pane " id="global">
+            <article>
+                <p>Ova tabela pruža informacije o metapodacima za COR indikatore koje je definisala Statistička komisija UN-a. <a href="https://unstats.un.org/sdgs/metadata/">Kompletne globalne metapodatke</a> obezbjeđuje Odjeljenje za statistiku UN-a.</p>
+
+                <table class="table">
+  
+      
+        
+      
+      
+      <tr>
+        <th scope="row">Cilj </th>
+        <td>
+          
+            <p>Goal 17: Strengthen the means of implementation and revitalize the Global Partnership for Sustainable Development</p>
+
+          
+        </td>
+        </tr>
+        
+      
+  
+      
+        
+      
+      
+      <tr>
+        <th scope="row">Zadatak </th>
+        <td>
+          
+            <p>Target 17.16: Enhance the Global Partnership for Sustainable Development, complemented by multi-stakeholder partnerships that mobilize and share knowledge, expertise, technology and financial resources, to support the achievement of the Sustainable Development Goals in all countries, in particular developing countries</p>
+
+          
+        </td>
+        </tr>
+        
+      
+  
+      
+        
+      
+      
+      <tr>
+        <th scope="row">Indikator </th>
+        <td>
+          
+            <p>Indicator 17.16.1: Number of countries reporting progress in multi-stakeholder development effectiveness monitoring frameworks that support the achievement of the sustainable development goals</p>
+
+          
+        </td>
+        </tr>
+        
+      
+  
+      
+        
+          
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+</table>
+
+            </article>
+        </div>
+        
+        
+        
+        
+        
+        <div role="tabpanel" class="tab-pane " id="sources">
+            <article>
+                
+                <!-- Count the non-empty sources (up to 5) -->
+
+
+
+
+
+            </article>
+        </div>
+        
+    
+    
+</div>
+  
+</div>
+  </div>
+</div>
+
+  <a href="#top">Povratak na početak</a>
+</div>
+
+<footer role="contentinfo">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div id="footerLinks">
+                    <ul>
+                        <li>
+                            <a href="https://open-sdg.org">Napravljeno koristeći platformu Open SDG</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/contact-us">Kontakt</a>
+                            
+                        </li>
+                        <li>
+                            <a href="/about/cookies-and-privacy/">Kolačići</a>
+                            
+                        </li>
+                        
+                        
+                        </ul>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+<script src="//cdn.datatables.net/fixedcolumns/3.2.3/js/dataTables.fixedColumns.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js" integrity="sha512-90vH1Z83AJY9DmlWa8WkjkV79yfS2n2Oxhsi2dZbIv0nC4E6m5AbH8Nh156kkM7JePmqD6tcZsfad1ueoaovww==" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js" integrity="sha256-Y26AMvaIfrZ1EQU49pf6H4QzVTrOI8m9wQYKkftBt4s=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/patternomaly@1.3.2/dist/patternomaly.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.2.2/dist/chartjs-plugin-annotation.min.js" integrity="sha256-XuHhf6q+GD7fscc96mTm/228GXf1Nn9wOYOE0EgeFzY=" crossorigin="anonymous"></script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.3/dist/html2canvas.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.2/dist/FileSaver.min.js"></script>
+
+
+
+
+
+
+
+<script>translations['general'] = translations['general'] || {};
+    translations['general']['hide'] = 'sakriti';</script>
+
+<script>translations['search'] = translations['search'] || {};
+    translations['search']['search'] = 'Pretraga';</script>
+
+<script src='/assets/js/sdg.js?v=20221020124320'></script>
+
+
+    
+    
+    <script src="/assets/js/custom.js?v=20221020124320"></script><script>
+    new indicatorInit();
+    new accessibilitySwitcher();
+</script>
+
+
+</body>
+</html>
