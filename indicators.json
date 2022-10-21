@@ -39,7 +39,7 @@
         },
         {
           "id": "1-4-1",
-          "title": "Procenat članova domaćinstva koji koriste poboljšane izvore pijaće vode u svom stanu/dvorištu/zemljištu ili izvore koji omogućavaju da se voda uzme i donese u domaćinstvo u roku od 30 minuta",
+          "title": "Procenat stanovništva koje živi u domaćinstvima sa pristupom osnovnim potrebama",
           "description": "",
           "keywords": "",
           "href": "/1-4-1",
@@ -71,7 +71,7 @@
         },
         {
           "id": "1-5-3",
-          "title": "Broj zemalja koje usvajaju i primjenjuju nacionalne strategije za smanjenje rizika od katastrofa u skladu sa Sendai okvirom za smanjenje rizika od katastrofa 2015–2030",
+          "title": "Broj zemalja koje usvajaju i primjenjuju nacionalne strategije za smanjenje rizika od katastrofa u skladu sa Sendai okvirom za smanjenje rizika od katastrofa 2015-2030",
           "description": "",
           "keywords": "",
           "href": "/1-5-3",
@@ -135,7 +135,7 @@
         },
         {
           "id": "2-2-1",
-          "title": "Prevalencija zaostajanja u rastu (visina za dob <-2 standardne devijacije od medijana standarda rasta djece Svjetske zdravstvene organizacije (WHO)) među djecom mlađom od 5 godina",
+          "title": "Procenat djece mlađe od 5 godina koja: (a)	zaostaju za dvije standardne devijacije (umjereni i teški oblik zaostajanja u rastu) (b) zaostaju za tri standardne devijacije (teški oblik zaostajanja u rastu) u odnosu na srednju vrijednost tjelesne visine za dati uzrast, po standardu SZO.",
           "description": "",
           "keywords": "",
           "href": "/2-2-1",
@@ -143,7 +143,7 @@
         },
         {
           "id": "2-2-2",
-          "title": "Prevalencija pothranjenosti (težina u odnosu na visinu >+2 ili <-2 standardna devijacija od medijana standarda rasta djece Svjetske zdravstvene organizacije) među djecom mlađom od 5 godina, prema tipu (gubljenje i prekomjerna tjelesna težina)",
+          "title": "Procenat djece mlađe od 5 godina koja: (a)	zaostaju za dvije standardne devijacije (umjereni i teški oblik zaostajanja u rastu) (b) zaostaju za tri standardne devijacije (teški oblik zaostajanja u rastu) u odnosu na srednju vrijednost tjelesne težine u odnosu na visinu, po standardu SZO.",
           "description": "",
           "keywords": "",
           "href": "/2-2-2",
