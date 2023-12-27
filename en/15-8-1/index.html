@@ -128,7 +128,7 @@ var translations = {
         <link res="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" crossorigin="">
         <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.2.3/css/fixedColumns.dataTables.min.css" crossorigin="">
-        <link rel="stylesheet" href="/assets/css/style.css?v=20231126231807">
+        <link rel="stylesheet" href="/assets/css/style.css?v=20231227102227">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
           integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
           crossorigin=""/>
@@ -404,7 +404,7 @@ data-event-label="high"
   id="indicatorData"
   data-indicatorid='indicator_15-8-1'
   data-id="15-8-1"
-  data-country="Montenegro"
+  data-country="custom.country_name"
   data-charttitle="Proportion of countries adopting relevant national legislation and adequately resourcing the prevention or control of invasive alien species"
   data-charttitles="[]"
   data-measurementunit=""
@@ -415,15 +415,15 @@ data-event-label="high"
   data-geocoderegex=""
   data-showmap="false"
   data-startvalues="[]"
-  data-graphlimits="null"
+  data-graphlimits="[]"
   data-stackeddisaggregation=""
-  data-graphannotations="null"
+  data-graphannotations="[]"
   data-graphtargetlines="null"
   data-graphseriesbreaks="null"
   data-indicatordownloads="null"
   data-dataschema="{&quot;fields&quot;:[{&quot;name&quot;:&quot;Year&quot;,&quot;type&quot;:&quot;number&quot;,&quot;title&quot;:&quot;Year&quot;},{&quot;name&quot;:&quot;Value&quot;,&quot;type&quot;:&quot;number&quot;,&quot;title&quot;:&quot;Value&quot;}]}"
   data-compositebreakdownlabel=""
-  data-precision="null"
+  data-precision="[]"
 >
   
   <div id="indicator-main" class="indicator-main col-md-12">
@@ -518,89 +518,39 @@ data-event-label="Change to indicator.sources tab"
   
       
         
-      
-      
-      <tr>
-        <th scope="row">Goal </th>
-        <td>
           
-            <p>Protect, restore and promote sustainable use of terrestrial ecosystems, sustainably manage forests, combat desertification, and halt and reverse land degradation and halt biodiversity loss</p>
-
-          
-        </td>
-        </tr>
+      
         
+          
       
+        
+          
+      
+        
+          
+      
+        
+          
+      
+        
+          
+      
+        
+          
+      
+        
+          
+      
+        
+          
+      
+        
+          
+      
+        
+          
   
-      
-        
-      
-      
-      <tr>
-        <th scope="row">Target </th>
-        <td>
-          
-            <p>By 2020, introduce measures to prevent the introduction and significantly reduce the impact of invasive alien species on land and water ecosystems and control or eradicate the priority species</p>
-
-          
-        </td>
-        </tr>
-        
-      
   
-      
-        
-      
-      
-      <tr>
-        <th scope="row">Indicator </th>
-        <td>
-          
-            <p>global_indicators.15-8-2-title</p>
-
-          
-        </td>
-        </tr>
-        
-      
-  
-      
-        
-          
-      
-        
-          
-      
-        
-          
-      
-        
-          
-      
-        
-      
-      
-      <tr>
-        <th scope="row">Comment and limitations </th>
-        <td>
-          
-            <p>metadata_texts.15-8-2-national-comment</p>
-
-          
-        </td>
-        </tr>
-        
-      
-  
-      
-        
-          
-      
-        
-          
-      
-        
-          
   
   
 </table>
@@ -682,6 +632,8 @@ data-event-label="Change to indicator.sources tab"
   
   
   
+  
+  
 </table>
 
             </article>
@@ -698,52 +650,6 @@ data-event-label="Change to indicator.sources tab"
 
 
 
-
-  <div class="row">
-  
-    
-    
-    <div class="col-md-6">
-      
-      <table class="table">
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-      
-        
-      
-      
-      <tr>
-        <th scope="row">Organisation </th>
-        <td>
-          
-            <p>Ministry of Economy and Tourism in Montenegro</p>
-
-          
-        </td>
-        </tr>
-        
-      
-  
-</table>
-
-    </div>
-    
-  </div>
 
 
             </article>
@@ -797,6 +703,8 @@ data-event-label="Change to indicator.sources tab"
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js" integrity="sha256-Y26AMvaIfrZ1EQU49pf6H4QzVTrOI8m9wQYKkftBt4s=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/patternomaly@1.3.2/dist/patternomaly.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.2.2/dist/chartjs-plugin-annotation.min.js" integrity="sha256-XuHhf6q+GD7fscc96mTm/228GXf1Nn9wOYOE0EgeFzY=" crossorigin="anonymous"></script>
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.3/dist/html2canvas.js"></script>
@@ -814,12 +722,12 @@ data-event-label="Change to indicator.sources tab"
 <script>translations['search'] = translations['search'] || {};
     translations['search']['search'] = 'Search';</script>
 
-<script src='/assets/js/sdg.js?v=20231126231807'></script>
+<script src='/assets/js/sdg.js?v=20231227102227'></script>
 
 
     
     
-    <script src="/assets/js/custom.js?v=20231126231807"></script><script>
+    <script src="/assets/js/custom.js?v=20231227102227"></script><script>
     new indicatorInit();
     new accessibilitySwitcher();
 </script>
