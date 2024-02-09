@@ -125,7 +125,7 @@ var translations = {
         <link res="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" crossorigin="">
         <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.2.3/css/fixedColumns.dataTables.min.css" crossorigin="">
-        <link rel="stylesheet" href="/assets/css/style.css?v=20231227102227">
+        <link rel="stylesheet" href="/assets/css/style.css?v=20240209162056">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
           integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
           crossorigin=""/>
@@ -476,46 +476,10 @@ data-event-label="high"
     }
 
     // Set values according to this site's configuration.
-    
-      try {
-        var currentValue = normalizeCurrentValue('SDG_GOAL__GLOBAL', "<p>Goal 14: Conserve and sustainably use the oceans, seas and marine resources for sustainable development</p>");
-        var propertyEditor = editor.getEditor('root.SDG_GOAL__GLOBAL');
-        propertyEditor.setValue(null);
-        propertyEditor.setValue(currentValue);
-        
-      }
-      catch (e) {
-        console.log(e.message);
-        console.log('Unable to set config key: SDG_GOAL__GLOBAL');
-      }
     propertyEditorAccessibilityFixes(editor.getEditor('root.SDG_GOAL__GLOBAL'));
 
-    
-      try {
-        var currentValue = normalizeCurrentValue('SDG_TARGET__GLOBAL', "<p>Target 14.2: By 2020, sustainably manage and protect marine and coastal ecosystems to avoid significant adverse impacts, including by strengthening their resilience, and take action for their restoration in order to achieve healthy and productive oceans</p>");
-        var propertyEditor = editor.getEditor('root.SDG_TARGET__GLOBAL');
-        propertyEditor.setValue(null);
-        propertyEditor.setValue(currentValue);
-        
-      }
-      catch (e) {
-        console.log(e.message);
-        console.log('Unable to set config key: SDG_TARGET__GLOBAL');
-      }
     propertyEditorAccessibilityFixes(editor.getEditor('root.SDG_TARGET__GLOBAL'));
 
-    
-      try {
-        var currentValue = normalizeCurrentValue('SDG_INDICATOR__GLOBAL', "<p>Indicator 14.2.1: Number of countries using ecosystem-based approaches to managing marine areas</p>");
-        var propertyEditor = editor.getEditor('root.SDG_INDICATOR__GLOBAL');
-        propertyEditor.setValue(null);
-        propertyEditor.setValue(currentValue);
-        
-      }
-      catch (e) {
-        console.log(e.message);
-        console.log('Unable to set config key: SDG_INDICATOR__GLOBAL');
-      }
     propertyEditorAccessibilityFixes(editor.getEditor('root.SDG_INDICATOR__GLOBAL'));
 
     propertyEditorAccessibilityFixes(editor.getEditor('root.methodology_global'));
@@ -665,12 +629,12 @@ data-event-label="high"
 <script>translations['search'] = translations['search'] || {};
     translations['search']['search'] = 'Pretraga';</script>
 
-<script src='/assets/js/sdg.js?v=20231227102227'></script>
+<script src='/assets/js/sdg.js?v=20240209162056'></script>
 
 
     
     
-    <script src="/assets/js/custom.js?v=20231227102227"></script><script>
+    <script src="/assets/js/custom.js?v=20240209162056"></script><script>
     new indicatorInit();
     new accessibilitySwitcher();
 </script>
