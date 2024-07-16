@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
-        <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=Promise%2CArray.prototype.forEach%2CString.prototype.includes%2CURLSearchParams%2CCustomEvent%2CArray.prototype.includes%2CArray.prototype.filter%2CArray.prototype.some%2CArray.prototype.find%2CArray.prototype.reduce%2CObject.assign%2CArray.isArray%2CObject.values%2CObject.entries%2CArray.from%2CSet%2CArray.prototype.findIndex"></script>
+        <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?version=4.8.0&features=Promise%2CString.prototype.includes%2CCustomEvent%2CArray.prototype.includes%2CArray.prototype.find%2CObject.assign%2CObject.values%2CObject.entries%2CArray.from%2CSet%2CArray.prototype.findIndex%2Cfetch"></script>
 <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.15.0/js/canvas-to-blob.min.js"></script>
 
         <script>
@@ -26,8 +26,9 @@ var opensdg = {
   },
 
   // A hook which can be replaced to alter whether/how the values that are
-  // displayed on indicator tables/graphs get rounded.
-  dataRounding: function(value) {
+  // displayed on indicator tables/graphs get rounded. A "context" parameter
+  // is also passed which contains additional information.
+  dataRounding: function(value, context) {
     // Alterations go here.
     return value;
   },
@@ -38,7 +39,24 @@ var opensdg = {
     this.dataDisplayAlterations.push(callback);
   },
 
+  // Disaggregations which should be ignored on indicator pages.
+  ignoredDisaggregations: null,
+
   language: 'cnr',
+
+  mapColors: {
+    "default": [
+        "#c4e1c6",
+        "#b0d1b3",
+        "#9bc2a1",
+        "#87b28f",
+        "#74a37c",
+        "#60946b",
+        "#4d8559",
+        "#3a7747",
+        "#276836"
+    ]
+},
 };
 
 </script>
@@ -99,14 +117,13 @@ var translations = {
         ================================================== -->
 
         
+    
     <title>Cilj 9 - Industrija, inovacije i infrastruktura - Indikatori za Ciljeve održivog razvoja</title>
+    
 
 
 
-        <meta name="description" content="">
-        <meta property="og:description" content="">
         
-        <link rel="canonical" href="/">
 
         <!--[if IE 9]>
         <script src="/assets/js/lib/classList.js"></script>
@@ -117,13 +134,13 @@ var translations = {
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png">
 <link rel="icon" type="image/x-icon" href="/assets/img/favicons/favicon.ico" />
 
+        
 
         
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
         <link res="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" crossorigin="">
-        <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.2.3/css/fixedColumns.dataTables.min.css" crossorigin="">
-        <link rel="stylesheet" href="/assets/css/style.css?v=20240716094100">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" crossorigin="">
+        <link rel="stylesheet" href="/assets/css/style.css?v=20240716135212">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
           integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
           crossorigin=""/>
@@ -133,6 +150,9 @@ var translations = {
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@2.9.7/dist/leaflet-search.min.css" crossorigin="">
         <link rel="stylesheet" href="https://cdn.kiprotect.com/klaro/v0.7/klaro.min.css" crossorigin=""/>
         
+
+        
+
 
         <!--[if IE]>
         <link rel="stylesheet" href="/assets/css/ie.css">
@@ -169,10 +189,10 @@ layout-goal
 <header role="banner" class="">
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light flex-wrap align-items-start">
-            <a class="navbar-brand" href="/" id="home">
+            <a class="navbar-brand" href="/" id="home" aria-label="" title="">
     <img src="/assets/img/logo/cnr/SDG_logo.png" alt="Crna Gora" />
 </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="d-flex flex-wrap w-100 justify-content-between">
@@ -196,7 +216,7 @@ layout-goal
         <label class="visually-hidden" for="indicator_search">Pretraga</label>
         <input class="form-control" type="search" name="q" id="indicator_search" title="Pretraga">
         <span class="input-group-append">
-            <button class="btn btn-outline-secondary ms-n5" aria-label="Pretraga" id="search-btn" type="submit">
+            <button class="btn btn-outline-secondary ms-n5" aria-label="" id="search-btn" type="submit">
                 <i class="fa fa-search"></i>
             </button>
         </span>
@@ -235,7 +255,7 @@ layout-goal
             </a>
         </li></ul>
 </div></span><a title="Omogućite visoki kontrast" aria-label="Omogućite visoki kontrast"
-    data-contrast-switch-to="" href="javascript:void(0)" data-on="click"
+    data-contrast-switch-to="" role="button" href="javascript:void(0)" data-on="click"
 data-event-category="Accessibility"
 data-event-action="Change contrast setting"
 data-event-label="high"
@@ -267,13 +287,13 @@ data-event-label="high"
     
 <div class="previous-next-links d-flex justify-content-between">
     <div class="text-left">
-        <a class="btn btn-primary" href="/8" aria-labelledby="previous-link">
+        <a class="btn btn-primary" href="/8/" aria-labelledby="previous-link">
             <i class="fa fa-chevron-left" aria-hidden="true"></i>
             <span id="previous-link" class="d-none d-md-inline">Prethodni cilj</span>
         </a>
     </div>
     <div class="text-right">
-        <a class="btn btn-primary" href="/10" aria-labelledby="next-link">
+        <a class="btn btn-primary" href="/10/" aria-labelledby="next-link">
             <span id="next-link" class="d-none d-md-inline">Sljedeći cilj</span>
             <i class="fa fa-chevron-right" aria-hidden="true"></i>
         </a>
@@ -291,11 +311,19 @@ data-event-label="high"
                 <img src="https://montestat.github.io/site/assets/img/goals/cnr/9.png" alt="Industrija, inovacije i infrastruktura - Cilj 9" id="goal-9" class="goal-icon-image goal-icon-image-" />
             </div>
             <div class="col-8 col-md-9 col-lg-10 goal-details">
-                <h1>Izgraditi otpornu infrastrukturu, promovisati inkluzivnu i održivu industrijalizaciju i podsticati inovacije</h1>
+                <h1>
+                    
+                        Izgraditi otpornu infrastrukturu, promovisati inkluzivnu i održivu industrijalizaciju i podsticati inovacije
+                    
+                </h1>
             </div>
         </div>
     </div>
 </div>
+
+
+
+
 
 
 <div id="main-content" class="container" role="main">
@@ -304,10 +332,14 @@ data-event-label="high"
 
 
 
-  <div class="container g-0">
-    <h2 class="goal-page-heading">Zadaci i indikatori</h2>
-
-    
+  <div class="container g-0 ">
+    <div class="row align-items-end">
+      <div class="col">
+        <h2 class="goal-page-heading">Zadaci i indikatori</h2>
+      </div>
+      
+    </div>
+    <hr class="goal-page-column-header-rule">
     
       
       <div class="row align-items-start goal-target">
@@ -319,6 +351,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Izgraditi kvalitetnu, pouzdanu, održivu i otpornu infrastrukturu, uključujući regionalnu i prekograničnu infrastrukturu, kao podršku privrednom razvoju i dobrobiti ljudi, uz fokus na povoljan i ravnopravan pristup za sve</span>
           </div>
+          
       </div>
         
 
@@ -336,7 +369,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/9-1-1">Procenat seoskog stanovništva koje živi u krugu od 2 km od puta tokom svih godišnjih doba</a></span>
+              <span class="indicator-name"><a href="/9-1-1/">Procenat seoskog stanovništva koje živi u krugu od 2 km od puta tokom svih godišnjih doba</a></span>
               
 
 
@@ -349,7 +382,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -376,7 +409,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/9-1-2">Obim putničkog i teretnog saobraćaja, po vidu prevoza</a></span>
+              <span class="indicator-name"><a href="/9-1-2/">Obim putničkog i teretnog saobraćaja, po vidu prevoza</a></span>
               
 
 
@@ -389,7 +422,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -413,6 +446,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Promovisati inkluzivnu i održivu industrijalizaciju i, do 2030. godine, znatno povećati udio industrije u zaposlenosti i bruto domaćem proizvodu, u skladu sa nacionalnim okolnostima, i udvostručiti njen udio u najmanje razvijenim zemljama</span>
           </div>
+          
       </div>
         
 
@@ -430,7 +464,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/9-2-1">Proizvodna vrijednost dodata kao udio BDP-a i po glavi stanovnika</a></span>
+              <span class="indicator-name"><a href="/9-2-1/">Proizvodna vrijednost dodata kao udio BDP-a i po glavi stanovnika</a></span>
               
 
 
@@ -443,7 +477,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -470,7 +504,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/9-2-2">Zaposlenost u proizvodnoj industriji kao udio ukupne zaposlenosti</a></span>
+              <span class="indicator-name"><a href="/9-2-2/">Zaposlenost u proizvodnoj industriji kao udio ukupne zaposlenosti</a></span>
               
 
 
@@ -483,7 +517,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -507,6 +541,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Povećati pristup malih industrijskih i drugih preduzeća, posebno u zemljama u razvoju, finansijskim uslugama, uključujući povoljne kredite, i njihovu integraciju u lance vrijednosti i tržišta</span>
           </div>
+          
       </div>
         
 
@@ -524,7 +559,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/9-3-1">Udio malih industrijskih preduzeća u ukupnoj industrijskoj vrijednosti dodatoj finansijskim uslugama, uključujući povoljne kredite, i njihovu integraciju u lance vrijednosti i tržišta</a></span>
+              <span class="indicator-name"><a href="/9-3-1/">Udio malih industrijskih preduzeća u ukupnoj industrijskoj vrijednosti dodatoj finansijskim uslugama, uključujući povoljne kredite, i njihovu integraciju u lance vrijednosti i tržišta</a></span>
               
 
 
@@ -537,7 +572,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -564,7 +599,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/9-3-2">Procenat malih industrija koje imaju zajam ili kreditnu liniju</a></span>
+              <span class="indicator-name"><a href="/9-3-2/">Procenat malih industrija koje imaju zajam ili kreditnu liniju</a></span>
               
 
 
@@ -577,7 +612,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -601,6 +636,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Do 2030. godine, unaprijediti industriju infrastrukture i rekonstrukcije da bude održiva, sa povećanom efikasnošću korišćenja resursa i većim prihvatanjem čistih i ekološki prihvatljivih tehnologija i industrijskih procesa, pri čemu sve zemlje preduzimaju radnje u skladu sa svojim mogućnostima</span>
           </div>
+          
       </div>
         
 
@@ -618,7 +654,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/9-4-1">Emisija CO2 po jedinici dodate vrijednosti</a></span>
+              <span class="indicator-name"><a href="/9-4-1/">Emisija CO2 po jedinici dodate vrijednosti</a></span>
               
 
 
@@ -631,7 +667,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -655,6 +691,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Unaprijediti naučna istraživanja, poboljšati tehnološke mogućnosti industrijskih sektora u svim zemljama, a posebno u zemljama u razvoju, uključujući, do 2030. godine, podsticanje inovacija i značajno povećanje broja zaposlenih u sektoru istraživanja i razvoja na milion ljudi, kao i javnu i privatnu potrošnju na istraživanje i razvoj</span>
           </div>
+          
       </div>
         
 
@@ -672,7 +709,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/9-5-1">Potrošnja na istraživanje i razvoj kao udio BDP-a</a></span>
+              <span class="indicator-name"><a href="/9-5-1/">Potrošnja na istraživanje i razvoj kao udio BDP-a</a></span>
               
 
 
@@ -685,7 +722,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -712,7 +749,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/9-5-2">Broj istraživača (sa punim radnim vremenom) na milion stanovnika</a></span>
+              <span class="indicator-name"><a href="/9-5-2/">Broj istraživača (sa punim radnim vremenom) na milion stanovnika</a></span>
               
 
 
@@ -725,7 +762,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -749,6 +786,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Omogućiti izgradnju održive i otporne infrastrukture u zemljama u razvoju kroz povećanu finansijsku, tehnološku i tehničku podršku afričkim zemljama, najmanje razvijenim zemljama, zemljama u razvoju bez izlaza na more i malim ostrvskim državama u razvoju</span>
           </div>
+          
       </div>
         
 
@@ -766,7 +804,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/9-a-1">Ukupna zvanična međunarodna podrška (zvanična razvojna pomoć plus drugi zvanični tokovi) infrastrukturi</a></span>
+              <span class="indicator-name"><a href="/9-a-1/">Ukupna zvanična međunarodna podrška (zvanična razvojna pomoć plus drugi zvanični tokovi) infrastrukturi</a></span>
               
 
 
@@ -779,7 +817,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -803,6 +841,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Podržati domaći razvoj tehnologije, istraživanje i inovacije u zemljama u razvoju, uključujući obezbjeđivanje podsticajnog strateškog okruženja za, između ostalog, industrijsku diversifikaciju i dodatu vrijednost robe</span>
           </div>
+          
       </div>
         
 
@@ -820,7 +859,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/9-b-1">Udio dodate vrijednosti srednje i visokotehnološke industrije u ukupnoj dodatoj vrijednosti</a></span>
+              <span class="indicator-name"><a href="/9-b-1/">Udio dodate vrijednosti srednje i visokotehnološke industrije u ukupnoj dodatoj vrijednosti</a></span>
               
 
 
@@ -833,7 +872,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -857,6 +896,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Značajno povećati pristup informaciono-komunikacionim tehnologijama i težiti pružanju univerzalnog i povoljnog pristupa internetu u najmanje razvijenim zemljama do 2020. godine</span>
           </div>
+          
       </div>
         
 
@@ -874,7 +914,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/9-c-1">Procenat stanovništva pokrivenog mobilnom mrežom, prema tehnologiji</a></span>
+              <span class="indicator-name"><a href="/9-c-1/">Procenat stanovništva pokrivenog mobilnom mrežom, prema tehnologiji</a></span>
               
 
 
@@ -887,7 +927,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -934,12 +974,11 @@ data-event-label="high"
     </div>
 </footer>
 
-<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-<script src="//cdn.datatables.net/fixedcolumns/3.2.3/js/dataTables.fixedColumns.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js" integrity="sha512-90vH1Z83AJY9DmlWa8WkjkV79yfS2n2Oxhsi2dZbIv0nC4E6m5AbH8Nh156kkM7JePmqD6tcZsfad1ueoaovww==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js" integrity="sha512-WFN04846sdKMIP5LKNphMaWzU7YpMyCU245etK3g/2ARYbPK9Ub18eG+ljU96qKRCWh+quCY7yefSmlkQw1ANQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js" integrity="sha256-Y26AMvaIfrZ1EQU49pf6H4QzVTrOI8m9wQYKkftBt4s=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/patternomaly@1.3.2/dist/patternomaly.js"></script>
 
@@ -960,12 +999,12 @@ data-event-label="high"
 <script>translations['search'] = translations['search'] || {};
     translations['search']['search'] = 'Pretraga';</script>
 
-<script src='/assets/js/sdg.js?v=20240716094100'></script>
+<script src='/assets/js/sdg.js?v=20240716135212'></script>
 
 
     
     
-    <script src="/assets/js/custom.js?v=20240716094100"></script><script>
+    <script src="/assets/js/custom.js?v=20240716135212"></script><script>
     new indicatorInit();
     new accessibilitySwitcher();
 </script>

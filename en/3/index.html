@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
-        <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=Promise%2CArray.prototype.forEach%2CString.prototype.includes%2CURLSearchParams%2CCustomEvent%2CArray.prototype.includes%2CArray.prototype.filter%2CArray.prototype.some%2CArray.prototype.find%2CArray.prototype.reduce%2CObject.assign%2CArray.isArray%2CObject.values%2CObject.entries%2CArray.from%2CSet%2CArray.prototype.findIndex"></script>
+        <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?version=4.8.0&features=Promise%2CString.prototype.includes%2CCustomEvent%2CArray.prototype.includes%2CArray.prototype.find%2CObject.assign%2CObject.values%2CObject.entries%2CArray.from%2CSet%2CArray.prototype.findIndex%2Cfetch"></script>
 <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.15.0/js/canvas-to-blob.min.js"></script>
 
         <script>
@@ -26,8 +26,9 @@ var opensdg = {
   },
 
   // A hook which can be replaced to alter whether/how the values that are
-  // displayed on indicator tables/graphs get rounded.
-  dataRounding: function(value) {
+  // displayed on indicator tables/graphs get rounded. A "context" parameter
+  // is also passed which contains additional information.
+  dataRounding: function(value, context) {
     // Alterations go here.
     return value;
   },
@@ -38,7 +39,24 @@ var opensdg = {
     this.dataDisplayAlterations.push(callback);
   },
 
+  // Disaggregations which should be ignored on indicator pages.
+  ignoredDisaggregations: null,
+
   language: 'en',
+
+  mapColors: {
+    "default": [
+        "#c4e1c6",
+        "#b0d1b3",
+        "#9bc2a1",
+        "#87b28f",
+        "#74a37c",
+        "#60946b",
+        "#4d8559",
+        "#3a7747",
+        "#276836"
+    ]
+},
 };
 
 </script>
@@ -99,14 +117,13 @@ var translations = {
         ================================================== -->
 
         
+    
     <title>Goal 3 - Good health and well-being - Indicators For The Sustainable Development Goals</title>
+    
 
 
 
-        <meta name="description" content="">
-        <meta property="og:description" content="">
         
-        <link rel="canonical" href="/">
 
         <!--[if IE 9]>
         <script src="/assets/js/lib/classList.js"></script>
@@ -117,13 +134,13 @@ var translations = {
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png">
 <link rel="icon" type="image/x-icon" href="/assets/img/favicons/favicon.ico" />
 
+        
 
         
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
         <link res="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" crossorigin="">
-        <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.2.3/css/fixedColumns.dataTables.min.css" crossorigin="">
-        <link rel="stylesheet" href="/assets/css/style.css?v=20240716094100">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" crossorigin="">
+        <link rel="stylesheet" href="/assets/css/style.css?v=20240716135212">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
           integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
           crossorigin=""/>
@@ -133,6 +150,9 @@ var translations = {
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@2.9.7/dist/leaflet-search.min.css" crossorigin="">
         <link rel="stylesheet" href="https://cdn.kiprotect.com/klaro/v0.7/klaro.min.css" crossorigin=""/>
         
+
+        
+
 
         <!--[if IE]>
         <link rel="stylesheet" href="/assets/css/ie.css">
@@ -169,10 +189,10 @@ layout-goal
 <header role="banner" class="">
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light flex-wrap align-items-start">
-            <a class="navbar-brand" href="/en/" id="home">
+            <a class="navbar-brand" href="/en/" id="home" aria-label="Go to homepage" title="Go to homepage">
     <img src="/assets/img/logo/en/SDG_logo.png" alt="Montenegro" />
 </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Show navigation menu">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="d-flex flex-wrap w-100 justify-content-between">
@@ -196,7 +216,7 @@ layout-goal
         <label class="visually-hidden" for="indicator_search">Search</label>
         <input class="form-control" type="search" name="q" id="indicator_search" title="Search">
         <span class="input-group-append">
-            <button class="btn btn-outline-secondary ms-n5" aria-label="Search" id="search-btn" type="submit">
+            <button class="btn btn-outline-secondary ms-n5" aria-label="Site search" id="search-btn" type="submit">
                 <i class="fa fa-search"></i>
             </button>
         </span>
@@ -235,7 +255,7 @@ layout-goal
             </a>
         </li></ul>
 </div></span><a title="Enable high contrast" aria-label="Enable high contrast"
-    data-contrast-switch-to="" href="javascript:void(0)" data-on="click"
+    data-contrast-switch-to="" role="button" href="javascript:void(0)" data-on="click"
 data-event-category="Accessibility"
 data-event-action="Change contrast setting"
 data-event-label="high"
@@ -267,13 +287,13 @@ data-event-label="high"
     
 <div class="previous-next-links d-flex justify-content-between">
     <div class="text-left">
-        <a class="btn btn-primary" href="/en/2" aria-labelledby="previous-link">
+        <a class="btn btn-primary" href="/en/2/" aria-labelledby="previous-link">
             <i class="fa fa-chevron-left" aria-hidden="true"></i>
             <span id="previous-link" class="d-none d-md-inline">Previous goal</span>
         </a>
     </div>
     <div class="text-right">
-        <a class="btn btn-primary" href="/en/4" aria-labelledby="next-link">
+        <a class="btn btn-primary" href="/en/4/" aria-labelledby="next-link">
             <span id="next-link" class="d-none d-md-inline">Next goal</span>
             <i class="fa fa-chevron-right" aria-hidden="true"></i>
         </a>
@@ -291,11 +311,19 @@ data-event-label="high"
                 <img src="https://montestat.github.io/site/assets/img/goals/en/3.png" alt="Good health and well-being - Goal 3" id="goal-3" class="goal-icon-image goal-icon-image-" />
             </div>
             <div class="col-8 col-md-9 col-lg-10 goal-details">
-                <h1>Ensure healthy lives and promote well-being for all at all ages</h1>
+                <h1>
+                    
+                        Ensure healthy lives and promote well-being for all at all ages
+                    
+                </h1>
             </div>
         </div>
     </div>
 </div>
+
+
+
+
 
 
 <div id="main-content" class="container" role="main">
@@ -304,10 +332,14 @@ data-event-label="high"
 
 
 
-  <div class="container g-0">
-    <h2 class="goal-page-heading">Targets and indicators</h2>
-
-    
+  <div class="container g-0 ">
+    <div class="row align-items-end">
+      <div class="col">
+        <h2 class="goal-page-heading">Targets and indicators</h2>
+      </div>
+      
+    </div>
+    <hr class="goal-page-column-header-rule">
     
       
       <div class="row align-items-start goal-target">
@@ -319,6 +351,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">By 2030, reduce the global maternal mortality ratio to less than 70 per 100,000 live births</span>
           </div>
+          
       </div>
         
 
@@ -336,7 +369,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-1-1">Maternal mortality ratio</a></span>
+              <span class="indicator-name"><a href="/en/3-1-1/">Maternal mortality ratio</a></span>
               
 
 
@@ -349,7 +382,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -376,7 +409,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-1-2">Proportion of births attended by skilled health personnel</a></span>
+              <span class="indicator-name"><a href="/en/3-1-2/">Proportion of births attended by skilled health personnel</a></span>
               
 
 
@@ -389,7 +422,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -413,6 +446,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">By 2030, end preventable deaths of newborns and children under 5 years of age, with all countries aiming to reduce neonatal mortality to at least as low as 12 per 1,000 live births and under‐5 mortality to at least as low as 25 per 1,000 live births</span>
           </div>
+          
       </div>
         
 
@@ -430,7 +464,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-2-1">Under‐5 mortality rate</a></span>
+              <span class="indicator-name"><a href="/en/3-2-1/">Under‐5 mortality rate</a></span>
               
 
 
@@ -443,7 +477,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -470,7 +504,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-2-2">Neonatal mortality rate</a></span>
+              <span class="indicator-name"><a href="/en/3-2-2/">Neonatal mortality rate</a></span>
               
 
 
@@ -483,7 +517,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -507,6 +541,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">By 2030, end the epidemics of AIDS, tuberculosis, malaria and neglected tropical diseases and combat hepatitis, water-borne diseases and other communicable diseases</span>
           </div>
+          
       </div>
         
 
@@ -524,7 +559,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-3-1">Number of new HIV infections per 1,000 uninfected population, by sex, age and key populations</a></span>
+              <span class="indicator-name"><a href="/en/3-3-1/">Number of new HIV infections per 1,000 uninfected population, by sex, age and key populations</a></span>
               
 
 
@@ -537,7 +572,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -564,7 +599,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-3-2">Tuberculosis incidence per 100,000 population</a></span>
+              <span class="indicator-name"><a href="/en/3-3-2/">Tuberculosis incidence per 100,000 population</a></span>
               
 
 
@@ -577,7 +612,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -604,7 +639,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-3-3">Malaria incidence per 1,000 population</a></span>
+              <span class="indicator-name"><a href="/en/3-3-3/">Malaria incidence per 1,000 population</a></span>
               
 
 
@@ -617,7 +652,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -644,7 +679,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-3-4">Hepatitis B incidence per 100,000 population</a></span>
+              <span class="indicator-name"><a href="/en/3-3-4/">Hepatitis B incidence per 100,000 population</a></span>
               
 
 
@@ -684,7 +719,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-3-5">Number of people requiring interventions against neglected tropical diseases</a></span>
+              <span class="indicator-name"><a href="/en/3-3-5/">Number of people requiring interventions against neglected tropical diseases</a></span>
               
 
 
@@ -697,7 +732,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -721,6 +756,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">By 2030, reduce by one third premature mortality from non-communicable diseases through prevention and treatment and promote mental health and well-being</span>
           </div>
+          
       </div>
         
 
@@ -738,7 +774,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-4-1">Mortality rate attributed to cardiovascular disease, cancer, diabetes or chronic respiratory disease</a></span>
+              <span class="indicator-name"><a href="/en/3-4-1/">Mortality rate attributed to cardiovascular disease, cancer, diabetes or chronic respiratory disease</a></span>
               
 
 
@@ -751,7 +787,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -778,7 +814,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-4-2">Suicide mortality rate</a></span>
+              <span class="indicator-name"><a href="/en/3-4-2/">Suicide mortality rate</a></span>
               
 
 
@@ -791,7 +827,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -815,6 +851,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Strengthen the prevention and treatment of substance abuse, including narcotic drug abuse and harmful use of alcohol</span>
           </div>
+          
       </div>
         
 
@@ -832,7 +869,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-5-1">Coverage of treatment interventions (pharmacological, psychosocial and rehabilitation and aftercare services) for substance use disorders</a></span>
+              <span class="indicator-name"><a href="/en/3-5-1/">Coverage of treatment interventions (pharmacological, psychosocial and rehabilitation and aftercare services) for substance use disorders</a></span>
               
 
 
@@ -872,7 +909,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-5-2">Alcohol per capita consumption (aged 15 years and older) within a calendar year in litres of pure alcohol</a></span>
+              <span class="indicator-name"><a href="/en/3-5-2/">Alcohol per capita consumption (aged 15 years and older) within a calendar year in litres of pure alcohol</a></span>
               
 
 
@@ -885,7 +922,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -909,6 +946,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">By 2020, halve the number of global deaths and injuries from road traffic accidents</span>
           </div>
+          
       </div>
         
 
@@ -926,7 +964,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-6-1">Death rate due to road traffic injuries</a></span>
+              <span class="indicator-name"><a href="/en/3-6-1/">Death rate due to road traffic injuries</a></span>
               
 
 
@@ -939,7 +977,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -963,6 +1001,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">By 2030, ensure universal access to sexual and reproductive health-care services, including for family planning, information and education, and the integration of reproductive health into national strategies and programmes</span>
           </div>
+          
       </div>
         
 
@@ -980,7 +1019,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-7-1">Proportion of women of reproductive age (aged 15–49 years) who have their need for family planning satisfied with modern methods</a></span>
+              <span class="indicator-name"><a href="/en/3-7-1/">Proportion of women of reproductive age (aged 15–49 years) who have their need for family planning satisfied with modern methods</a></span>
               
 
 
@@ -993,7 +1032,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -1020,7 +1059,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-7-2">Adolescent birth rate (aged 10–14 years; aged 15–19 years) per 1,000 women in that age group</a></span>
+              <span class="indicator-name"><a href="/en/3-7-2/">Adolescent birth rate (aged 10–14 years; aged 15–19 years) per 1,000 women in that age group</a></span>
               
 
 
@@ -1033,7 +1072,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -1060,6 +1099,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Achieve universal health coverage, including financial risk protection, access to quality essential health-care services and access to safe, effective, quality and affordable essential medicines and vaccines for all</span>
           </div>
+          
       </div>
         
 
@@ -1077,47 +1117,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-8-1">Coverage of essential health services</a></span>
-              
-
-
-
-
-    <ul class="tags list-unstyled list-inline" aria-label="Tags"><li class="list-inline-item">
-        <span class="visually-hidden">Indicator status</span>
-        
-
-
-
-<span class="status notstarted">
-    <span class="status-inner">Exploring data sources</span>
-</span>
-
-
-        </li></ul>
-
-
-            </div>
-            
-            
-          </div>
-        
-
-          
-          
-          
-          
-
-          <div class="row align-items-start goal-indicator">
-          
-            <div class="col-auto goal-page-indicator-number">
-              <h4>
-                <span class="indicator-number"><span class="visually-hidden">Indicator</span> 3.8.1.a</span>
-              </h4>
-            </div>
-            <div class="col goal-page-indicator-name">
-              
-              <span class="indicator-name"><a href="/en/3-8-1-a">Coverage of essential health services</a></span>
+              <span class="indicator-name"><a href="/en/3-8-1/">Coverage of essential health services</a></span>
               
 
 
@@ -1130,7 +1130,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -1160,47 +1160,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-8-2">Proportion of population with large household expenditures on health as a share of total household expenditure or income</a></span>
-              
-
-
-
-
-    <ul class="tags list-unstyled list-inline" aria-label="Tags"><li class="list-inline-item">
-        <span class="visually-hidden">Indicator status</span>
-        
-
-
-
-<span class="status notstarted">
-    <span class="status-inner">Exploring data sources</span>
-</span>
-
-
-        </li></ul>
-
-
-            </div>
-            
-            
-          </div>
-        
-
-          
-          
-          
-          
-
-          <div class="row align-items-start goal-indicator">
-          
-            <div class="col-auto goal-page-indicator-number">
-              <h4>
-                <span class="indicator-number"><span class="visually-hidden">Indicator</span> 3.8.2.a</span>
-              </h4>
-            </div>
-            <div class="col goal-page-indicator-name">
-              
-              <span class="indicator-name"><a href="/en/3-8-2-a">Number of persons covered by health insurance or public health system per 1,000 inhabitants</a></span>
+              <span class="indicator-name"><a href="/en/3-8-2/">Proportion of population with large household expenditures on health as a share of total household expenditure or income</a></span>
               
 
 
@@ -1213,7 +1173,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -1240,6 +1200,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">By 2030, substantially reduce the number of deaths and illnesses from hazardous chemicals and air, water and soil pollution and contamination</span>
           </div>
+          
       </div>
         
 
@@ -1257,7 +1218,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-9-1">Mortality rate attributed to household and ambient air pollution</a></span>
+              <span class="indicator-name"><a href="/en/3-9-1/">Mortality rate attributed to household and ambient air pollution</a></span>
               
 
 
@@ -1270,7 +1231,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -1297,7 +1258,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-9-2">Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (exposure to unsafe Water, Sanitation and Hygiene for All (WASH) services)</a></span>
+              <span class="indicator-name"><a href="/en/3-9-2/">Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (exposure to unsafe Water, Sanitation and Hygiene for All (WASH) services)</a></span>
               
 
 
@@ -1337,7 +1298,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-9-3">Mortality rate attributed to unintentional poisoning</a></span>
+              <span class="indicator-name"><a href="/en/3-9-3/">Mortality rate attributed to unintentional poisoning</a></span>
               
 
 
@@ -1350,7 +1311,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -1374,6 +1335,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Strengthen the implementation of the World Health Organization Framework Convention on Tobacco Control in all countries, as appropriate</span>
           </div>
+          
       </div>
         
 
@@ -1391,7 +1353,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-a-1">Age-standardized prevalence of current tobacco use among persons aged 15 years and older</a></span>
+              <span class="indicator-name"><a href="/en/3-a-1/">Age-standardized prevalence of current tobacco use among persons aged 15 years and older</a></span>
               
 
 
@@ -1404,7 +1366,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -1428,6 +1390,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Support the research and development of vaccines and medicines for the communicable and non‐communicable diseases that primarily affect developing countries, provide access to affordable essential medicines and vaccines, in accordance with the Doha Declaration on the TRIPS Agreement and Public Health, which affirms the right of developing countries to use to the full the provisions in the Agreement on Trade-Related Aspects of Intellectual Property Rights regarding flexibilities to protect public health, and, in particular, provide access to medicines for all</span>
           </div>
+          
       </div>
         
 
@@ -1445,7 +1408,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-b-1">Proportion of the target population covered by all vaccines included in their national programme</a></span>
+              <span class="indicator-name"><a href="/en/3-b-1/">Proportion of the target population covered by all vaccines included in their national programme</a></span>
               
 
 
@@ -1458,7 +1421,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -1485,7 +1448,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-b-2">Total net official development assistance to medical research and basic health sectors</a></span>
+              <span class="indicator-name"><a href="/en/3-b-2/">Total net official development assistance to medical research and basic health sectors</a></span>
               
 
 
@@ -1498,7 +1461,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -1525,7 +1488,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-b-3">Proportion of health facilities that have a core set of relevant essential medicines available and affordable on a sustainable basis</a></span>
+              <span class="indicator-name"><a href="/en/3-b-3/">Proportion of health facilities that have a core set of relevant essential medicines available and affordable on a sustainable basis</a></span>
               
 
 
@@ -1562,6 +1525,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Substantially increase health financing and the recruitment, development, training and retention of the health workforce in developing countries, especially in least developed countries and small island developing States</span>
           </div>
+          
       </div>
         
 
@@ -1579,7 +1543,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-c-1">Health worker density and distribution</a></span>
+              <span class="indicator-name"><a href="/en/3-c-1/">Health worker density and distribution</a></span>
               
 
 
@@ -1592,7 +1556,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -1616,6 +1580,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Strengthen the capacity of all countries, in particular developing countries, for early warning, risk reduction and management of national and global health risks</span>
           </div>
+          
       </div>
         
 
@@ -1633,7 +1598,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-d-1">International Health Regulations (IHR) capacity and health emergency preparedness</a></span>
+              <span class="indicator-name"><a href="/en/3-d-1/">International Health Regulations (IHR) capacity and health emergency preparedness</a></span>
               
 
 
@@ -1646,7 +1611,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Reported</span>
+    <span class="status-inner">Reported online</span>
 </span>
 
 
@@ -1673,7 +1638,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/en/3-d-2">Percentage of bloodstream infections due to selected antimicrobial-resistant organisms</a></span>
+              <span class="indicator-name"><a href="/en/3-d-2/">Percentage of bloodstream infections due to selected antimicrobial-resistant organisms</a></span>
               
 
 
@@ -1733,12 +1698,11 @@ data-event-label="high"
     </div>
 </footer>
 
-<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-<script src="//cdn.datatables.net/fixedcolumns/3.2.3/js/dataTables.fixedColumns.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js" integrity="sha512-90vH1Z83AJY9DmlWa8WkjkV79yfS2n2Oxhsi2dZbIv0nC4E6m5AbH8Nh156kkM7JePmqD6tcZsfad1ueoaovww==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js" integrity="sha512-WFN04846sdKMIP5LKNphMaWzU7YpMyCU245etK3g/2ARYbPK9Ub18eG+ljU96qKRCWh+quCY7yefSmlkQw1ANQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js" integrity="sha256-Y26AMvaIfrZ1EQU49pf6H4QzVTrOI8m9wQYKkftBt4s=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/patternomaly@1.3.2/dist/patternomaly.js"></script>
 
@@ -1759,12 +1723,12 @@ data-event-label="high"
 <script>translations['search'] = translations['search'] || {};
     translations['search']['search'] = 'Search';</script>
 
-<script src='/assets/js/sdg.js?v=20240716094100'></script>
+<script src='/assets/js/sdg.js?v=20240716135212'></script>
 
 
     
     
-    <script src="/assets/js/custom.js?v=20240716094100"></script><script>
+    <script src="/assets/js/custom.js?v=20240716135212"></script><script>
     new indicatorInit();
     new accessibilitySwitcher();
 </script>

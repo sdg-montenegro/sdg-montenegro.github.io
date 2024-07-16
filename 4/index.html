@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
-        <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=Promise%2CArray.prototype.forEach%2CString.prototype.includes%2CURLSearchParams%2CCustomEvent%2CArray.prototype.includes%2CArray.prototype.filter%2CArray.prototype.some%2CArray.prototype.find%2CArray.prototype.reduce%2CObject.assign%2CArray.isArray%2CObject.values%2CObject.entries%2CArray.from%2CSet%2CArray.prototype.findIndex"></script>
+        <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?version=4.8.0&features=Promise%2CString.prototype.includes%2CCustomEvent%2CArray.prototype.includes%2CArray.prototype.find%2CObject.assign%2CObject.values%2CObject.entries%2CArray.from%2CSet%2CArray.prototype.findIndex%2Cfetch"></script>
 <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.15.0/js/canvas-to-blob.min.js"></script>
 
         <script>
@@ -26,8 +26,9 @@ var opensdg = {
   },
 
   // A hook which can be replaced to alter whether/how the values that are
-  // displayed on indicator tables/graphs get rounded.
-  dataRounding: function(value) {
+  // displayed on indicator tables/graphs get rounded. A "context" parameter
+  // is also passed which contains additional information.
+  dataRounding: function(value, context) {
     // Alterations go here.
     return value;
   },
@@ -38,7 +39,24 @@ var opensdg = {
     this.dataDisplayAlterations.push(callback);
   },
 
+  // Disaggregations which should be ignored on indicator pages.
+  ignoredDisaggregations: null,
+
   language: 'cnr',
+
+  mapColors: {
+    "default": [
+        "#c4e1c6",
+        "#b0d1b3",
+        "#9bc2a1",
+        "#87b28f",
+        "#74a37c",
+        "#60946b",
+        "#4d8559",
+        "#3a7747",
+        "#276836"
+    ]
+},
 };
 
 </script>
@@ -99,14 +117,13 @@ var translations = {
         ================================================== -->
 
         
+    
     <title>Cilj 4 - Kvalitetno obrazovanje - Indikatori za Ciljeve održivog razvoja</title>
+    
 
 
 
-        <meta name="description" content="">
-        <meta property="og:description" content="">
         
-        <link rel="canonical" href="/">
 
         <!--[if IE 9]>
         <script src="/assets/js/lib/classList.js"></script>
@@ -117,13 +134,13 @@ var translations = {
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png">
 <link rel="icon" type="image/x-icon" href="/assets/img/favicons/favicon.ico" />
 
+        
 
         
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
         <link res="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" crossorigin="">
-        <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.2.3/css/fixedColumns.dataTables.min.css" crossorigin="">
-        <link rel="stylesheet" href="/assets/css/style.css?v=20240716094100">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" crossorigin="">
+        <link rel="stylesheet" href="/assets/css/style.css?v=20240716135212">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
           integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
           crossorigin=""/>
@@ -133,6 +150,9 @@ var translations = {
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@2.9.7/dist/leaflet-search.min.css" crossorigin="">
         <link rel="stylesheet" href="https://cdn.kiprotect.com/klaro/v0.7/klaro.min.css" crossorigin=""/>
         
+
+        
+
 
         <!--[if IE]>
         <link rel="stylesheet" href="/assets/css/ie.css">
@@ -169,10 +189,10 @@ layout-goal
 <header role="banner" class="">
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light flex-wrap align-items-start">
-            <a class="navbar-brand" href="/" id="home">
+            <a class="navbar-brand" href="/" id="home" aria-label="" title="">
     <img src="/assets/img/logo/cnr/SDG_logo.png" alt="Crna Gora" />
 </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="d-flex flex-wrap w-100 justify-content-between">
@@ -196,7 +216,7 @@ layout-goal
         <label class="visually-hidden" for="indicator_search">Pretraga</label>
         <input class="form-control" type="search" name="q" id="indicator_search" title="Pretraga">
         <span class="input-group-append">
-            <button class="btn btn-outline-secondary ms-n5" aria-label="Pretraga" id="search-btn" type="submit">
+            <button class="btn btn-outline-secondary ms-n5" aria-label="" id="search-btn" type="submit">
                 <i class="fa fa-search"></i>
             </button>
         </span>
@@ -235,7 +255,7 @@ layout-goal
             </a>
         </li></ul>
 </div></span><a title="Omogućite visoki kontrast" aria-label="Omogućite visoki kontrast"
-    data-contrast-switch-to="" href="javascript:void(0)" data-on="click"
+    data-contrast-switch-to="" role="button" href="javascript:void(0)" data-on="click"
 data-event-category="Accessibility"
 data-event-action="Change contrast setting"
 data-event-label="high"
@@ -267,13 +287,13 @@ data-event-label="high"
     
 <div class="previous-next-links d-flex justify-content-between">
     <div class="text-left">
-        <a class="btn btn-primary" href="/3" aria-labelledby="previous-link">
+        <a class="btn btn-primary" href="/3/" aria-labelledby="previous-link">
             <i class="fa fa-chevron-left" aria-hidden="true"></i>
             <span id="previous-link" class="d-none d-md-inline">Prethodni cilj</span>
         </a>
     </div>
     <div class="text-right">
-        <a class="btn btn-primary" href="/5" aria-labelledby="next-link">
+        <a class="btn btn-primary" href="/5/" aria-labelledby="next-link">
             <span id="next-link" class="d-none d-md-inline">Sljedeći cilj</span>
             <i class="fa fa-chevron-right" aria-hidden="true"></i>
         </a>
@@ -291,11 +311,19 @@ data-event-label="high"
                 <img src="https://montestat.github.io/site/assets/img/goals/cnr/4.png" alt="Kvalitetno obrazovanje - Cilj 4" id="goal-4" class="goal-icon-image goal-icon-image-" />
             </div>
             <div class="col-8 col-md-9 col-lg-10 goal-details">
-                <h1>Obezbijediti inkluzivno i pravedno obrazovanje i promovisati mogućnosti cjeloživotnog učenja za sve</h1>
+                <h1>
+                    
+                        Obezbijediti inkluzivno i pravedno obrazovanje i promovisati mogućnosti cjeloživotnog učenja za sve
+                    
+                </h1>
             </div>
         </div>
     </div>
 </div>
+
+
+
+
 
 
 <div id="main-content" class="container" role="main">
@@ -304,10 +332,14 @@ data-event-label="high"
 
 
 
-  <div class="container g-0">
-    <h2 class="goal-page-heading">Zadaci i indikatori</h2>
-
-    
+  <div class="container g-0 ">
+    <div class="row align-items-end">
+      <div class="col">
+        <h2 class="goal-page-heading">Zadaci i indikatori</h2>
+      </div>
+      
+    </div>
+    <hr class="goal-page-column-header-rule">
     
       
       <div class="row align-items-start goal-target">
@@ -319,6 +351,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Do 2030. godine, obezbijediti da sve djevojčice i dječaci završe besplatno, pravedno i kvalitetno osnovno i srednje obrazovanje koje će pružiti odgovarajuće i djelotvorne ishoda učenja</span>
           </div>
+          
       </div>
         
 
@@ -336,7 +369,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/4-1-1">Udio djece i mladih: (a) u razredima 2/3; (B) na kraju osnovne škole; i (c) na kraju niže srednje škole koja postižu najmanje minimalni nivo poznavanja iz (i) čitanja i (ii) matematike, po polu</a></span>
+              <span class="indicator-name"><a href="/4-1-1/">Udio djece i mladih: (a) u razredima 2/3; (B) na kraju osnovne škole; i (c) na kraju niže srednje škole koja postižu najmanje minimalni nivo poznavanja iz (i) čitanja i (ii) matematike, po polu</a></span>
               
 
 
@@ -349,7 +382,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -376,7 +409,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/4-1-2">Stopa završetka (osnovno obrazovanje, niže srednje obrazovanje, više srednje obrazovanje)</a></span>
+              <span class="indicator-name"><a href="/4-1-2/">Stopa završetka (osnovno obrazovanje, niže srednje obrazovanje, više srednje obrazovanje)</a></span>
               
 
 
@@ -389,7 +422,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -413,6 +446,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Do 2030. godine, obezbijediti da sve djevojčice i dječaci imaju pristup kvalitetnom razvoju, brizi i predškolskom obrazovanju u ranom djetinjstvu, tako da budu spremni za osnovno obrazovanje</span>
           </div>
+          
       </div>
         
 
@@ -430,7 +464,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/4-2-1">Procenat djece starosti 36–59 mjeseci koja su dostigla očekivani nivo razvoja u najmanje tri od sljedeće četiri oblasti: pismenost/poznavanje brojeva, fizički razvoj, socijalno-emocionalni domen i učenje</a></span>
+              <span class="indicator-name"><a href="/4-2-1/">Procenat djece starosti 36–59 mjeseci koja su dostigla očekivani nivo razvoja u najmanje tri od sljedeće četiri oblasti: pismenost/poznavanje brojeva, fizički razvoj, socijalno-emocionalni domen i učenje</a></span>
               
 
 
@@ -443,7 +477,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -473,7 +507,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/4-2-2">Stopa učešća u organizovanom učenju (godinu dana prije zvaničnog uzrasta za ulazak u osnovno obrazovanje), po polu</a></span>
+              <span class="indicator-name"><a href="/4-2-2/">Stopa učešća u organizovanom učenju (godinu dana prije zvaničnog uzrasta za ulazak u osnovno obrazovanje), po polu</a></span>
               
 
 
@@ -486,7 +520,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -510,6 +544,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Do 2030. godine, obezbijediti jednak pristup za sve žene i muškarce povoljnom i kvalitetnom tehničkom, stručnom i tercijarnom obrazovanju, uključujući univerzitete</span>
           </div>
+          
       </div>
         
 
@@ -527,7 +562,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/4-3-1">Stopa učestvovanja mladih i odraslih u formalnom i neformalnom obrazovanju i osposobljavanju u prethodnih 12 mjeseci, po polu</a></span>
+              <span class="indicator-name"><a href="/4-3-1/">Stopa učestvovanja mladih i odraslih u formalnom i neformalnom obrazovanju i osposobljavanju u prethodnih 12 mjeseci, po polu</a></span>
               
 
 
@@ -540,7 +575,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -564,6 +599,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Do 2030. godine, značajno povećati broj mladih i odraslih osoba koje posjeduju odgovarajuće vještine, uključujući tehničke i stručne vještine, za zapošljavanje, dostojanstvena radna mjesta i preduzetništvo</span>
           </div>
+          
       </div>
         
 
@@ -581,7 +617,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/4-4-1">Udio mladih i odraslih osoba koje imaju informaciono-komunikacione vještine (ICT), prema vrsti vještine</a></span>
+              <span class="indicator-name"><a href="/4-4-1/">Udio mladih i odraslih osoba koje imaju informaciono-komunikacione vještine (ICT), prema vrsti vještine</a></span>
               
 
 
@@ -594,7 +630,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -618,6 +654,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Do 2030. godine, eliminisati razliku među rodovima u obrazovanju i obezbijediti jednak pristup svim nivoima obrazovanja i stručnog osposobljavanja za ugrožene grupe, uključujući osobe sa invaliditetom, autohtone narode i djecu u osjetljivim životnim situacijama</span>
           </div>
+          
       </div>
         
 
@@ -635,7 +672,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/4-5-1">Indeksi pariteta (žene/muškarci, ruralni/urbani, najniži/najviši kvintil bogatstva i drugi kao što su status invalidnosti, autohtoni narodi i ugroženi sukobima, kako podaci postanu dostupni) za sve indikatore obrazovanja na ovoj listi koji se mogu razdvojiti</a></span>
+              <span class="indicator-name"><a href="/4-5-1/">Indeksi pariteta (žene/muškarci, ruralni/urbani, najniži/najviši kvintil bogatstva i drugi kao što su status invalidnosti, autohtoni narodi i ugroženi sukobima, kako podaci postanu dostupni) za sve indikatore obrazovanja na ovoj listi koji se mogu razdvojiti</a></span>
               
 
 
@@ -648,7 +685,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -672,6 +709,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Do 2030. godine, obezbijediti da svi mladi i znatan udio odraslih, i muškaraca i žena, nauče da čitaju i pišu i steknu numeričku pismenost</span>
           </div>
+          
       </div>
         
 
@@ -689,7 +727,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/4-6-1">Proporcija stanovništva u datoj starosnoj grupi koja postiže barem fiksni nivo znanja u funkcionalnoj (a) pismenosti i (b) matematičkim vještinama, prema polu</a></span>
+              <span class="indicator-name"><a href="/4-6-1/">Proporcija stanovništva u datoj starosnoj grupi koja postiže barem fiksni nivo znanja u funkcionalnoj (a) pismenosti i (b) matematičkim vještinama, prema polu</a></span>
               
 
 
@@ -702,7 +740,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -726,6 +764,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Do 2030. godine, obezbijediti da svi koji uče stiču ona znanja i vještine koje su potrebne za promovisanje održivog razvoja, između ostalog i putem obrazovanja za održivi razvoj i za održive stilova života, ljudskih prava, ravnopravnosti rodova, promovisanja kulture mira i nenasilja, globalnog državljanstva i uvažavanja kulturne raznolikosti i doprinosa kulture održivom razvoju</span>
           </div>
+          
       </div>
         
 
@@ -743,7 +782,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/4-7-1">Mjera u kojoj su (i) obrazovanje o globalnom građanstvu i (ii) obrazovanje za održivi razvoj uključeni u (a) nacionalne obrazovne politike; (b) nastavne planove i programe; (c) obrazovanje nastavnika; i (d) ocjenjivanje učenika</a></span>
+              <span class="indicator-name"><a href="/4-7-1/">Mjera u kojoj su (i) obrazovanje o globalnom građanstvu i (ii) obrazovanje za održivi razvoj uključeni u (a) nacionalne obrazovne politike; (b) nastavne planove i programe; (c) obrazovanje nastavnika; i (d) ocjenjivanje učenika</a></span>
               
 
 
@@ -780,6 +819,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Izgraditi i nadograditi objekte za obrazovanje koji su prilagođeni djeci i osobama sa invaliditetom, koji su rodno senzitivni i pružaju bezbjedno, nenasilno, inkluzivno i djelotvorno okruženje za učenje za sve</span>
           </div>
+          
       </div>
         
 
@@ -797,7 +837,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/4-a-1">Procenat škola koje nude osnovne usluge, prema vrsti usluga</a></span>
+              <span class="indicator-name"><a href="/4-a-1/">Procenat škola koje nude osnovne usluge, prema vrsti usluga</a></span>
               
 
 
@@ -810,7 +850,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -834,6 +874,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Do 2020. godine, na globalnom nivou značajno povećati broj raspoloživih stipendija za zemlje u razvoju, posebno za najmanje razvijene zemlje, male ostrvske države i afričke zemlje, za upis u visoko obrazovanje, uključujući stručno osposobljavanje i informaciono-komunikacione tehnologije, tehničke, inženjerske i naučne programe u razvijenim zemljama i drugim zemljama u razvoju</span>
           </div>
+          
       </div>
         
 
@@ -851,7 +892,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/4-b-1">Obim tokova zvanične razvojne pomoći za stipendije po sektoru i vrsti studija</a></span>
+              <span class="indicator-name"><a href="/4-b-1/">Obim tokova zvanične razvojne pomoći za stipendije po sektoru i vrsti studija</a></span>
               
 
 
@@ -864,7 +905,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -888,6 +929,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Do 2030. godine, značajno povećati broj kvalifikovanih nastavnika, između ostalog i kriz međunarodnu saradnju za osposobljavanje nastavnika u zemljama u razvoju, a naročito najmanje razvijenim zemaljama i malih ostrvskim državama u razvoju</span>
           </div>
+          
       </div>
         
 
@@ -905,7 +947,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/4-c-1">Broj nastavnika sa minimalno potrebnim kvalifikacijama, prema nivou obrazovanja</a></span>
+              <span class="indicator-name"><a href="/4-c-1/">Broj nastavnika sa minimalno potrebnim kvalifikacijama, prema nivou obrazovanja</a></span>
               
 
 
@@ -918,7 +960,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -965,12 +1007,11 @@ data-event-label="high"
     </div>
 </footer>
 
-<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-<script src="//cdn.datatables.net/fixedcolumns/3.2.3/js/dataTables.fixedColumns.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js" integrity="sha512-90vH1Z83AJY9DmlWa8WkjkV79yfS2n2Oxhsi2dZbIv0nC4E6m5AbH8Nh156kkM7JePmqD6tcZsfad1ueoaovww==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js" integrity="sha512-WFN04846sdKMIP5LKNphMaWzU7YpMyCU245etK3g/2ARYbPK9Ub18eG+ljU96qKRCWh+quCY7yefSmlkQw1ANQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js" integrity="sha256-Y26AMvaIfrZ1EQU49pf6H4QzVTrOI8m9wQYKkftBt4s=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/patternomaly@1.3.2/dist/patternomaly.js"></script>
 
@@ -991,12 +1032,12 @@ data-event-label="high"
 <script>translations['search'] = translations['search'] || {};
     translations['search']['search'] = 'Pretraga';</script>
 
-<script src='/assets/js/sdg.js?v=20240716094100'></script>
+<script src='/assets/js/sdg.js?v=20240716135212'></script>
 
 
     
     
-    <script src="/assets/js/custom.js?v=20240716094100"></script><script>
+    <script src="/assets/js/custom.js?v=20240716135212"></script><script>
     new indicatorInit();
     new accessibilitySwitcher();
 </script>

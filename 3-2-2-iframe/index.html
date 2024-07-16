@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="cnr" class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+        <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?version=4.8.0&features=Promise%2CString.prototype.includes%2CCustomEvent%2CArray.prototype.includes%2CArray.prototype.find%2CObject.assign%2CObject.values%2CObject.entries%2CArray.from%2CSet%2CArray.prototype.findIndex%2Cfetch"></script>
+<script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.15.0/js/canvas-to-blob.min.js"></script>
+
+        <script>
+// This is where we initialise any global variables, namespaced in "opensdg".
+var opensdg = {
+
+  // A base URL for asynchronous calls to SDG data.
+  remoteDataBaseUrl: 'https://www.sdgmontenegro.me/sdg-production-data/cnr',
+
+  chartConfigAlterations: [],
+  // A hook which can be used to modify the configuration for Chart.js.
+  chartConfigAlter: function(callback) {
+    this.chartConfigAlterations.push(callback);
+  },
+
+  tableConfigAlterations: [],
+  // A hook which can be used to modify the configuration for Datatables.
+  tableConfigAlter: function(callback) {
+    this.tableConfigAlterations.push(callback);
+  },
+
+  // A hook which can be replaced to alter whether/how the values that are
+  // displayed on indicator tables/graphs get rounded. A "context" parameter
+  // is also passed which contains additional information.
+  dataRounding: function(value, context) {
+    // Alterations go here.
+    return value;
+  },
+
+  // A hook which can be used to alter the data before it is displayed on charts/tables.
+  dataDisplayAlterations: [],
+  dataDisplayAlter: function(callback) {
+    this.dataDisplayAlterations.push(callback);
+  },
+
+  // Disaggregations which should be ignored on indicator pages.
+  ignoredDisaggregations: null,
+
+  language: 'cnr',
+
+  mapColors: {
+    "default": [
+        "#c4e1c6",
+        "#b0d1b3",
+        "#9bc2a1",
+        "#87b28f",
+        "#74a37c",
+        "#60946b",
+        "#4d8559",
+        "#3a7747",
+        "#276836"
+    ]
+},
+};
+
+</script>
+
+        <script>
+// JavaScript container for translation data.
+var translations = {
+  //Javascript version of the "t" filter from jekyll-open-sdg-plugins.
+  t: function(key) {
+
+    if (!key || typeof key !== 'string') {
+      return '';
+    }
+
+    // The majority of uses of this function are to translate disaggregation
+    // data. To spare data providers of needing to enter "data." in front of
+    // their disaggregation data, we specifically look for that here.
+    if (typeof this.data === 'object' && this.data !== null && this.data[key]) {
+      return this.data[key];
+    }
+
+    var originalKey = key;
+    var drilled = this;
+    var levelsDrilled = 0;
+    var levels = key.split('.');
+
+    for (var level in levels) {
+      // If we have drilled down to soon, abort.
+      if (typeof drilled !== 'object') {
+        break;
+      }
+
+      if (levels[level] in drilled) {
+        drilled = drilled[levels[level]];
+        levelsDrilled += 1;
+      }
+    }
+
+    // If we didn't drill the right number of levels, return the original string.
+    if (levels.length != levelsDrilled) {
+      return originalKey;
+    }
+
+    // Otherwise we must have drilled all the way.
+    return drilled;
+  },
+};
+</script>
+
+        <!-- Basic Page Needs
+        ================================================== -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"><!-- Mobile Specific Metas
+        ================================================== -->
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Title and meta description
+        ================================================== -->
+
+        
+    <title>
+        
+        Indikator 3.2.2 -
+        
+        Stopa smrtnosti novorođenčadi - Indikatori za Ciljeve održivog razvoja
+    </title>
+
+
+
+        
+
+        <!--[if IE 9]>
+        <script src="/assets/js/lib/classList.js"></script>
+        <![endif]-->
+
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png">
+<link rel="icon" type="image/x-icon" href="/assets/img/favicons/favicon.ico" />
+
+        
+
+        
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <link res="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" crossorigin="">
+        <link rel="stylesheet" href="/assets/css/style.css?v=20240716135212">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+          integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+          crossorigin=""/>
+        <link rel="stylesheet" href="https://cdn.rawgit.com/socib/Leaflet.TimeDimension/master/dist/leaflet.timedimension.control.min.css"  crossorigin=""/>
+        <link rel="stylesheet" href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css'  crossorigin=""/>
+        <link rel="stylesheet" href="https://bowercdn.net/c/leaflet.zoomhome-latest/dist/leaflet.zoomhome.css"  crossorigin=""/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@2.9.7/dist/leaflet-search.min.css" crossorigin="">
+        <link rel="stylesheet" href="https://cdn.kiprotect.com/klaro/v0.7/klaro.min.css" crossorigin=""/>
+        
+
+        
+
+
+        <!--[if IE]>
+        <link rel="stylesheet" href="/assets/css/ie.css">
+        <![endif]-->
+
+        
+
+    </head>
+<body class="language-cnr
+layout-indicator-iframe
+">
+<!-- <div class="container"> -->
+
+<script>translations['header'] = {"alpha":"Alfa","default_contrast":"Podrazumijevani kontrast","disable_high_contrast":"Onemogućite visoki kontrast","disclaimer":"Ovo je razvojna web stranica. Dobrodošle su vaše <a href=\"mailto:%email_contacts.suggestions\">povratne informacije</a>.","enable_high_contrast":"Omogućite visoki kontrast","high_contrast":"Visoki kontrast","internet_explorer_message":"Otkrili smo da koristite Internet Ekplorer da biste posjetili ovu web stranicu. Microsoft sada ukida Internet Ekplorer. Kao rezultat toga, ova web lokacija više ne podržava nijednu verziju Internet Ekplorer-a. Neke funkcije na ovom sajtu neće raditi. Trebalo bi da koristite moderan pretraživač kao što je Edge, Chrome, Firefox ili Safari. Ako imate poteškoća sa instaliranjem ili pristupom drugom pretraživaču, kontaktirajte svoj tim za IT podršku.","internet_explorer_message_title":"Ovaj internet pretraživač više nije podržan","skip_link":"Preskoči na glavni sadržaj","tag_line":"17 ciljeva za transformaciju našeg svijeta","toggle_menu":"Podešavanje menija. Kliknite da biste proširili ili skupili meni.","toggle_search":"Podešavanje pretrage. Kliknite da proširite ili suzite traku za pretraživanje."};</script>
+
+
+<script type="text/template" id="item_template">
+  <% _.each(fields, function(fieldItem) { %>
+    <div class="variable-selector
+      <% if(allowedFields.indexOf(fieldItem.field) == -1) { %> disallowed <% }%>
+      <% if (typeof childFields !== 'undefined' && childFields.indexOf(fieldItem.field) !== -1) { %> child <% }%>
+      "
+      data-field="<%=fieldItem.field%>"
+    >
+      <button class='accessBtn' tabindex='0' aria-expanded='false'
+        <% if(allowedFields.indexOf(fieldItem.field) == -1) { %>
+        aria-describedby='variable-hint-<%=fieldItem.field.replace(/ /g, '-')%>'
+        <% }%>
+      >
+        <% if(allowedFields.indexOf(fieldItem.field) == -1) { %><h6><% } else { %><h5><% } %>
+          <span aria-hidden="true"><%=translations.t(fieldItem.label)%><i class="fa fa-chevron-down"></i></span>
+          <span class="sr-only">Prikaži potkategorije: <%=translations.t(fieldItem.label)%></span>
+        <% if(allowedFields.indexOf(fieldItem.field) == -1) { %></h6><% } else { %></h5><% } %>
+      </button>
+      <div class="variable-options">
+        <fieldset>
+          <legend class="sr-only">Potkategorije - <%=translations.t(fieldItem.field)%></legend>
+          <div>
+            <button data-type="select">Označi sve</button>
+            <button data-type="clear">Obriši sve</button>
+          </div>
+          <% _.each(fieldItem.values, function(item) { %>
+            <label>
+              <input type="checkbox" <%=item.checked ? 'checked' : ''%> value="<%=item.value%>" data-field="<%=fieldItem.field%>" /><%=translations.t(item.value)%>
+            </label>
+          <% }); %>
+        </fieldset>
+      </div>
+
+      <% if(allowedFields.indexOf(fieldItem.field) == -1) { %>
+        <div class="variable-hint" id="variable-hint-<%=fieldItem.field.replace(/ /g, '-')%>">Dostupno kada je odabrano '<%= translations.t(_.find(edges, { To: fieldItem.field }).From) %>'
+        </div>
+        <div class="no-data-hint" id="no-data-hint-<%=fieldItem.field.replace(/ /g, '-')%>">
+          Nema dostupnih opcija zbog gornjih filtera
+        </div>
+      <% }%>
+
+    </div>
+  <% }); %>
+</script>
+
+<script type="text/template" id="units_template">
+  
+  <% if(units.length > 1) { %>
+  
+    <h4>Jedinica mjere</h4>
+    <fieldset>
+      <legend class="sr-only">Jedinica mjere</legend>
+      <% _.each(units, function(unitsItem, index) { %>
+        <% var checked = (selectedUnit) ? (selectedUnit==unitsItem) : (index==0); %>
+        <label><input type="radio" name="unit" value="<%=unitsItem%>" tabindex=0 <%=checked ? 'checked' : ''%> /> <%=translations.t(unitsItem)%></label>
+      <% }); %>
+    </fieldset>
+  
+  <% } %>
+  
+</script>
+
+<script type="text/template" id="series_template">
+  
+  <% if(serieses.length > 1) { %>
+  
+    <h4>Niz</h4>
+    <fieldset>
+      <legend class="sr-only">Niz</legend>
+      <% _.each(serieses, function(seriesItem, index) { %>
+        <% var isProxy = (proxySerieses.includes(seriesItem)) %>
+        <% var checked = (selectedSeries) ? (selectedSeries==seriesItem) : (index==0); %>
+        <label><input type="radio" name="series" value="<%=seriesItem%>" tabindex=0 <%=checked ? 'checked' : ''%> /> <%=translations.t(seriesItem)%> <%=isProxy ? proxyPill : ''%></label>
+      <% }); %>
+    </fieldset>
+  
+  <% } %>
+  
+</script>
+
+<script>translations['indicator'] = {"annotation_2030_target":"Cilj indikatora 2030","annotation_series_break":"Prekid niza","announce_data_added":"Grafik i tabela su ažurirani kako bi uključili podatke.","announce_data_not_available":"Na grafiku i tabeli nema podataka.","announce_data_removed":"Grafik i tabela su ažurirani kako bi se isključili podaci.","apply":"Primijeniti","cancel":"Poništiti","change_breakdowns":"Promjena kvarova","chart":"Grafik","chart_annotation":"Označavanje grafika","clear_all":"Obriši sve","clear_selections":"Obrišite odabire","data_keyboard_navigation":"Pritisnite enter da biste pretraživali podatke pomoću tipki sa strelicama lijevo i desno.","data_not_available":"Ovi podaci nijesu dostupni. Molimo odaberite alternativne podatke za prikaz.","data_tabular_alternative":"Kao alternativu tabelarnih podataka pogledajte Tabelu.","dataset_size_warning":"Previše je skupova podataka za prikaz na grafiku. Neće se sve prikazati dok ne uklonite neke odabire.","download_chart":"Preuzmite CSV grafik","download_chart_image":"Preuzmite sliku grafika","download_chart_image_title":"Preuzmite grafik kao sliku","download_csv":"Preuzmite CSV","download_csv_title":"Preuzmite kao CSV","download_geojson":"Preuzmite GeoJSON","download_geojson_title":"Preuzmite kao GeoJSON","download_headline":"Preuzmite naslovni CSV","download_headline_title":"Preuzmite podatke naslova kao CSV","download_source":"Preuzmite izvorni CSV","download_source_for_disaggregations":"Preuzmite izvorni CSV za disagregacije","download_source_sdmx":"Preuzmite izvorni SDMX","download_source_sdmx_title":"Preuzmite izvorne podatke kao SDMX","download_source_title":"Preuzmite izvorne podatke kao CSV","download_table":"Preuzmite CSV tabelu","edit":"Urediti","edit_configuration":"Urediti konfiguraciju","edit_data":"Urediti podatke","edit_metadata":"Urediti metapodatke","footnote":"Objašnjenje za izvore podataka","geographical_area":"Geografsko područje","global_metadata":"Globalni metapodaci","global_metadata_blurb":"Ova tabela pruža informacije o metapodacima za COR indikatore koje je definisala Statistička komisija UN-a. <a href=\"https://unstats.un.org/sdgs/metadata/\">Kompletne globalne metapodatke</a> obezbjeđuje Odjeljenje za statistiku UN-a.","headline_data":"Naslovni podaci","legend_help":"Kliknite na legendu da uklonite pojedinačne linije sa grafika.","loading":"Učitavanje","loading_map":"Učitavanje mape","map":"Mapa","map_search":"Pretraga","map_search_hide":"Sakrij pretragu","map_search_show":"Prikaži pretragu","map_year_slider":"Klizač za godinu","national_metadata":"Nacionalni metapodaci","national_metadata_blurb":"Ova tabela pruža više informacija o indikatoru koji je dostupan iz crnogorske statistike a najbliže odgovara globalnom indikatoru COR. Imajte na umu da i kada je globalni indikator COR u potpunosti dostupan iz crnogorske statistike, ovu tabelu treba konsultovati za informacije o nacionalnoj metodologiji i druge informacije o crnogorskim metapodacima.","next":"Sljedeći indikator","no_data_hint":"Nema dostupnih opcija zbog gornjih filtera","no_headline_data":"Nema dostupnih naslovnih podataka","plot_legend_description":"Legenda grafika: lista linija uključenih u grafik","previous":"Prethodni indikator","select_all":"Označi sve","series":"Niz","series_help":"Odaberite kategorije iz padajućih menija u nastavku da vidite različite tipove podataka. Neki podaci neće biti dostupni dok se ne odabere viši nivo pretrage.","source":"Izvor","sources":"Izvori","status":"Status indikatora","sub_categories":"Potkategorije","sub_categories_show":"Prikaži potkategorije:","table":"Tabela","table_column_sort":"Kliknite da biste sortirali po ovoj koloni","tags":"Oznake","unit":"Jedinica","unit_of_measurement":"Jedinica mjere","units_type":"Tip jedinica","variable_hint":"Dostupno kada je odabrano '%field'","view_indicator_list":"Pogledajte listu indikatora ovog cilja"};</script>
+
+<script>translations['data'] = {"10_5_1_cat_1":"Nenaplativi krediti umanjeni za rezervisanja za kapital","10_5_1_cat_2":"Nenaplativi krediti do ukupnih bruto kredita","14_5_1_cat_1":"Prosječan udio ključnih morskih područja biodiverziteta pokrivenih zaštićenim područjima","14_5_1_cat_2":"Pokrivenost zaštićenih područja u odnosu na morska područja (ekskluzivne ekonomske zone)","15_1_2_cat_1":"slatkovodni","15_1_2_cat_2":"kopneni","15_2_1_cat_1":"Nadzemna biomasa u šumi","15_2_1_cat_2":"Godišnja stopa promjene šumske površine","15_2_1_cat_3":"Udio šumske površine sa dugoročnim planom upravljanja","15_2_1_cat_4":"Udio šumske površine unutar zakonom utvrđenih zaštićenih područja","16_6_1_cat_1":"Primarni državni rashodi kao proporcija prvobitno odobrenog budžeta","17_10_1_cat_1":"Svjetski ponderisani tarifni prosjek, status najpovlašćenije nacije, svi proizvodi","17_10_1_cat_2":"Svjetski ponderisani tarifni prosjek, preferencijalni status, svi proizvodi","17_18_3_cat_2":"Indeks statističkih performansi","1_1_1_cat_1":"Udio stanovništva ispod međunarodne linije siromaštva","1_1_1_cat_2":"Zaposleno stanovništvo ispod međunarodne linije siromaštva","1_2_gjr":"1-2 GJR","1_3_1_cat_1":"Udio majki sa novorođenčadima koje primaju porodiljsku novčanu naknadu","1_3_1_cat_2":"Udio stanovništva iznad zakonske starosne dobi za penziju koje prima penziju","1_3_1_cat_3":"Udio nezaposlenih koji primaju novčanu naknadu za nezaposlene","1_3_1_cat_4":"Udio stanovništva sa teškim invaliditetom koje prima invalidninu","1_3_1_cat_5":"Udio stanovništva obuhvaćenog najmanje jednim davanjem socijalne zaštite","1_5_1_cat_1":"Broj umrlih i nestalih osoba pripisanih katastrofama","1_5_1_cat_2":"Broj direktno pogođenih osoba pripisanih katastrofama","2_3_gjr":"2-3 GJR","3_8_2_cat_1":"Udio stanovništva sa velikim izdacima domaćinstva za zdravstvo (veći od 10%) kao udio u ukupnim rashodima ili prihodima domaćinstva","3_8_2_cat_2":"Udio stanovništva sa velikim izdacima domaćinstva za zdravstvo (veći od 25%) kao udio u ukupnim rashodima ili prihodima domaćinstva","3_9_1_cat_1":"Stopa smrtnosti standardizovana po godinama koja se pripisuje zagađenju vazduha na otvorenom","3_9_1_cat_2":"Stopa smrtnosti standardizovana po godinama koja se pripisuje zagađenju vazduha u domaćinstvu","3_9_1_cat_3":"Stopa smrtnosti standardizovana po godinama koja se pripisuje zagađenju vazduha na otvorenom i u domaćinstvu","3_9_1_cat_4":"Sirova stopa smrtnosti koja se pripisuje zagađenju vazduha na otvorenom","3_9_1_cat_5":"Sirova stopa smrtnosti koja se pripisuje zagađenju vazduha na otvorenom i u domaćinstvu","3_9_1_cat_6":"Sirova stopa smrtnosti koja se pripisuje zagađenju vazduha u domaćinstvu","3_b_1_cat_1":"Udio ciljne populacije s pristupom 3 doze difterije-tetanusa-pertusisa (DTP3)","3_b_1_cat_2":"Udio ciljne populacije koja ima pristup drugoj dozi vakcine koja sadrži ospice (MCV2)","3_d_1_cat_1":"Kapacitet međunarodnih zdravstvenih propisa (IHR), godišnji izvještaj o samoprocjeni države (SPAR), zakonodavstvo i finansiranje","3_d_1_cat_2":"Kapacitet međunarodnih zdravstvenih propisa (IHR), godišnji izvještaj o samoprocjeni države (SPAR), koordinacija IHR-a i funkcije nacionalne kontakt tačke za IHR","4_1_2_cat_1":"Stopa završetka nižeg srednjeg obrazovanja","4_a_1_cat_1":"Udio osnovnih škola sa pristupom računarima u pedagoške svrhe","4_b_1_cat_1":"Ukupni zvanični tokovi za stipendije, po zemljama primateljima","5_1_1_cat_1":"Stepen do kojeg pravni okviri promovišu, sprovode i prate rodnu ravnopravnost u javnom životu, na skali od 0 do 100","5_1_1_cat_2":"Stepen do kojeg pravni okviri promovišu, sprovode i prate rodnu ravnopravnost u pogledu nasilja nad ženama, na skali od 0 do 100.","5_1_1_cat_3":"Stepen do kojeg pravni okviri promovišu, sprovode i prate rodnu ravnopravnost u pogledu zapošljavanja i ekonomskih koristi, na skali od 0 do 100.","5_1_1_cat_4":"Stepen do kojeg pravni okviri promovišu, sprovode i prate rodnu ravnopravnost u pogledu bračnih i porodičnih beneficija, na skali od 0 do 100.","5_4_1_cat_1":"Neaktivno stanovništvo zbog obaveza njege","5_5_1_cat_1":"nacionalni parlament","5_5_1_cat_2":"lokalne samouprave","5_5_2_cat_1":"menadžerske pozicije","5_5_2_cat_2":"viši i srednji rukovodeći položaji","5_6_2_cat_1":"u kojoj mjeri zakoni i propisi zemlje garantuju pun i jednak pristup seksualnoj i reproduktivnoj zdravstvenoj zaštiti, informacijama i obrazovanju ženama i muškarcima starijim od 15 godina","5_6_2_cat_10":"u kojoj mjeri zakoni i propisi zemlje garantuju pun i jednak pristup uslugama kontracepcije ženama i muškarcima starijim od 15 godina","5_6_2_cat_11":"u kojoj mjeri zakoni i propisi zemlje garantuju pun i jednak pristup pristanku za kontracepciju ženama i muškarcima starijim od 15 godina","5_6_2_cat_12":"u kojoj mjeri zakoni i propisi zemlje garantuju pun i jednak pristup hitnoj kontracepciji za žene i muškarce od 15 godina i više","5_6_2_cat_13":"u kojoj mjeri državni zakoni i propisi garantiraju pun i jednak pristup zakonima o nastavnom planu i programu seksualnog obrazovanja ženama i muškarcima starijim od 15 godina","5_6_2_cat_14":"u kojoj mjeri državni zakoni i propisi garantiraju pun i jednak pristup temama nastavnog plana i programa seksualnog obrazovanja ženama i muškarcima starijim od 15 godina","5_6_2_cat_15":"u kojoj mjeri državni zakoni i propisi garantiraju pun i jednak pristup seksualnoj i reproduktivnoj zdravstvenoj zaštiti, informacijama i obrazovanju o porodiljskoj skrbi za žene i muškarce od 15 godina i više","5_6_2_cat_16":"u kojoj mjeri državni zakoni i propisi jamče pun i jednak pristup kontraceptivima i planiranju porodice ženama i muškarcima starijim od 15 godina","5_6_2_cat_17":"u kojoj mjeri zakoni i propisi zemlje garantuju pun i jednak pristup seksualnom obrazovanju za žene i muškarce od 15 godina i više","5_6_2_cat_18":"u kojoj mjeri zakoni i propisi zemlje garantuju pun i jednak pristup seksualnoj i reproduktivnoj zdravstvenoj zaštiti, informacijama i obrazovanju o HIV-u i HPV-u ženama i muškarcima starijim od 15 godina","5_6_2_cat_2":"u kojoj mjeri zakoni i propisi zemlje garantuju pun i jednak pristup seksualnoj i reproduktivnoj zdravstvenoj zaštiti, informacijama i obrazovanju o porodiljskoj skrbi za žene i muškarce od 15 godina i više","5_6_2_cat_3":"u kojoj mjeri zakoni i propisi zemlje garantuju pun i jednak pristup uslugama savjetovanja i testiranja na HIV za žene i muškarce od 15 godina i više","5_6_2_cat_4":"u kojoj mjeri zakoni i propisi zemlje garantuju pun i jednak pristup uslugama liječenja i skrbi za HIV za žene i muškarce od 15 godina i više","5_6_2_cat_5":"u kojoj mjeri zakoni i propisi zemlje garantuju pun i jednak pristup povjerljivosti HIV-a ženama i muškarcima starijim od 15 godina","5_6_2_cat_6":"u kojoj mjeri državni zakoni i propisi garantiraju pun i jednak pristup HPV vakcini ženama i muškarcima starijim od 15 godina","5_6_2_cat_7":"u kojoj mjeri državni zakoni i propisi garantiraju pun i jednak pristup seksualnoj i reproduktivnoj zdravstvenoj zaštiti, informacijama i obrazovanju o proizvodima za spašavanje života ženama i muškarcima starijim od 15 godina","5_6_2_cat_8":"u kojoj mjeri zakoni i propisi zemlje garantuju pun i jednak pristup pobačaju ženama i muškarcima starijim od 15 godina","5_6_2_cat_9":"u kojoj mjeri zakoni i propisi zemlje garantuju pun i jednak pristup njezi nakon pobačaja za žene i muškarce od 15 godina i više","5_a_2_cat_1":"stepen do kojeg pravni okvir (uključujući običajno pravo) garantuje ženama jednaka prava na vlasništvo nad zemljom i/ili kontrolu, na skali od 1 do 6","6_3_2_cat_1":"ukupno vodena tijela","6_3_2_cat_2":"tijela podzemne vode","6_3_2_cat_3":"otvorena vodena tijela","6_3_2_cat_4":"riječna vodena tijela","6_4_1_cat_2":"poljoprivreda","6_4_1_cat_3":"industrija","6_4_1_cat_4":"usluge","6_5_1_cat_1":"omogućavajuće okruženje","6_5_1_cat_2":"institucije i učešće","6_5_1_cat_3":"instrumenti upravljanja","6_5_1_cat_4":"finansiranje","6_5_2_cat_1":"slivovi rijeka i jezera","6_5_2_cat_2":"vodonosnici","6_a_1_cat_1":"Hidroelektrane","6_a_1_cat_2":"Upravljanje otpadom/odlaganje","6_a_1_cat_3":"Očuvanje vodnih resursa (uključujući prikupljanje podataka)","6_a_1_cat_4":"Vodovod i kanalizacija - veliki sistemi","6_b_1_cat_1":"voda za piće - urbana sredina","6_b_1_cat_2":"pijaća voda - ruralna sredina","6_b_1_cat_3":"kanalizacija - urbana sredina","6_b_1_cat_4":"kanalizacija - ruralna sredina","6_b_1_cat_5":"promocija higijene","6_b_1_cat_6":"planiranje i upravljanje vodenim resursima","8_4_2_cat_1":"biomasa","8_4_2_cat_2":"fosilna goriva","8_4_2_cat_3":"metalne rude","8_4_2_cat_4":"nemetalni minerali","9_c_1_cat_1":"najmanje 2G","9_c_1_cat_2":"najmanje 3G","9_c_1_cat_3":"najmanje 4G","AGR":"AGR","ALL":"sve","ALLAREA":"Sve lokacije","ALP":"ALP","ARM":"ARM","Administrative head":"Administrativna cjelina","Age":"Starost","Andrijevica":"Andrijevica","BIOENERGY":"bio-energija","Bar":"Bar","Bar UB":"Bar UB","Berane":"Berane","Berane (sa Petnjicom)":"Berane (sa Petnjicom)","Bijelo Polje":"Bijelo Polje","Bothsex":"Oba pola","Budva":"Budva","CLO":"CLO","Category":"Kategorija","Census":"Popis stanovništva i domaćinstava","Cetinje":"Cetinje","Convention":"Konvencija","Count":"Brojnost","Danilovgrad":"Danilovgrad","Density":"Gustina","Economic class":"Klase ekonomske veličine gazdinstava 2010. godina","Economic head":"Ekonomska cjelina","Female":"Žene","GEOTHERMAL":"geotermalno","HYDROPOWER":"hidro-energija","Herceg Novi":"Herceg Novi","IND":"IND","Institution":"Institucija","Kolasin":"Kolašin","Kotor":"Kotor","LSU class":"Uslovno grlo LSU","Location":"Lokacija","MARINE":"energija mora","MULTIPLE":"više izvora","Male":"Muškarci","Mojkovac":"Mojkovac","Niksic":"Nikšić","Niksic UB":"Nikšić UB","Plav (sa Gusinjem)":"Plav (sa Gusinjem)","Pljevlja":"Pljevlja","Pljevlja UB":"Pljevlja UB","Pluzine":"Plužine","Podgorica":"Podgorica","Podgorica UB":"Podgorica UB","Podgorica UT":"Podgorica UT","RURAL":"Ruralno","Register":"Registar rođenih/umrlih","Roma settlements":"Romska naselja","Rozaje":"Rožaje","SOLAR":"solarno","Sex":"Pol","Size class":"Veličina razreda prema korišćenom poljoprivrednom zemljištu (ha)","Summary sheet 1":"Sumirano - Obračunski list za dimenzije PI-1.1, PI-2.1 i PI-2.3","Summary sheet 2":"Sumirano - Obračun rashoda po varijansama ekonomske klasifikacije PI-2.2","TEX":"TEX","Tivat":"Tivat","URBAN":"Gradsko","Ulcinj":"Ulcinj","Units":"Jedinica","Value":"Vrijednost","WIND":"vjetar","Year":"Godina","Zabljak":"Žabljak","accreditation":"akreditacija (1 označava akreditaciju A)","adult":"odrasli","adults_15":"odraslih ljudi (15+)","advanced_spread_sheets":"Upotreba naprednih funkcija softvera za tabelarnu obradu podataka za organiziranje i analizu podataka, kao što je sortiranje, filtriranje, korišćenje formula, kreiranje grafikona","african_development_bank":"Afrička razvojna banka","aged 0-15 years":"manje od 15 godina","aged 0-17 years":"manje od 18 godina","aged 0-18 years":"manje od 18 godina","aged 15-19 and 10-14 years":"15-19 i 10-14 godina","aged 15-24 years":"15-24 godine","aged 15-64 years":"15-64 godine","aged 18-24 years":"18-24 godine","aged 18-64 years":"18-64 godine","aged 25-54 years":"25-54 godine","aged 25-64 years":"25-64 godine","aged 55-64 years":"55-64 godine","aged 65 years":"65 godina","aged more 15 years":"više od 15 godina","aged more 25 years":"više od 25 godina","aged over 65 years":"65 ili više godina","air_traffic":"avio saobraćaj","allages":"sva godišta","allarea":"Sve lokacije","asian_development_bank":"Azijska razvojna banka","atms":"bankomati","basel_convention":"Baselska konvencija","basel_convention_1":"Označavanje kontakt osobe i jednu ili više nadležnih organa","basel_convention_2":"Podnošenje godišnjih nacionalnih izvještaja tokom izvještajnog perioda","branches_of_commercial_banks":"filijale poslovnih banaka","cat_b":"vađenje rude i kamena","cat_c":"prerađivačka industrija","cat_d":"snadbijevanje električnom energijom, gasom, parom i klimatizacija","cat_e":"snadbijevanje vodom, upravljanjem otpadnim vodama, kontrolisanje procesa uklanjanja otpada i slične aktivnosti","change_settings":"Promjena postavki softvera, uključujući operativni sistem ili sigurnosne programe","class_2_3":"razredi 2/3","clean_tech_cat_1":"Udio stanovništva koje koristi čista goriva i tehnologije za kuvanje","clean_tech_cat_2":"Udio stanovništva koje koristi čista goriva i tehnologije za grijanje","clean_tech_cat_3":"Udio stanovništva koja koriste čista goriva i tehnologije za osvjetljenje","clean_tech_cat_4":"Udio stanovništva koja koriste čista goriva i tehnologije za kuvanje, grijanje i osvjetljenje","clean_tech_cat_5":"Udio stanovništva koja koriste čista goriva i tehnologije","co2_emission_cat_1":"Emisija ugljen-dioksida iz sagorijevanja goriva, milioni tona","co2_emission_cat_2":"Emisije ugljen-dioksida po jedinici BDP-a, kg CO2 po konstanti 2010 USD","co2_emission_cat_3":"Emisije ugljen-dioksida po jedinici dodate vrijednosti proizvodnje, kg CO2 po konstanti 2010 USD","collected_waste":"sakupljen otpad","companies":"Preduzeća","compensation_employees":"Kompenzacija zaposlenih","composition_variance":"varijansa kompozicije","conventional_agriculture":"Konvencionalna obrada","copy_files":"Kopiranje ili premještanje datoteka ili foldera","dental staff":"stomatološko osoblje","economic_class_15000_25000":"15000-25000","economic_class_2000_4000":"2000-4000","economic_class_4000_8000":"4000-8000","economic_class_8000_15000":" 8000-15000","economic_class_less_2000":"< 2000","economic_class_more_25000":"> 25000","eur":"EUR","family_agriculture":"Porodična poljoprivredna gazdinstva","farms":"gazdinstva","farms_pp_2010":"Gazdinstva PP 2010 - hektari","farms_spg_2016":"Gazdinstva SPG 2016 - hektari","financial_stability_board":"Odbor za finansijsku stabilnost","fixed_capital":"Potrošnja fiksnog kapitala","fotografije":"korišćenje softvera za uređivanje fotografija, video ili audio datoteka","goods_services":"Upotreba robe i usluga","government":"Vlada","grants":"Grantovi","hazardous_waste":"Stvoreni opasni otpad po glavi stanovnika (kg)","health workers":"ljekari","hectares":"hektari","index":"Indeks","info_15_8_1":"Crna Gora je 2019. godine donijela Zakon o stranim i invazivnim stranim vrstama, biljaka, životinja i gljiva, čija je primjena počela u martu 2021. godine. Takođe, od 2018. godine, Crna Gora je članica Evropske organizacije za zaštitu biljaka (Europian Plant Protection Organisation - EPPO), koja ima definisan postupak procjene rizika, kojim se procjenjuje potencijalna invazivnost strane vrste u slučaju njenog unosa u područje u kojem nije prirodna.","install_software":"Instaliranje softvera ili aplikacija","institution_footnote":"Prvi navedeni izvor predstavlja instituciju odakle su podaci za navedeni indikator preuzeti. Drugi navedeni izvor je prepoznat kao nadležna institucija/proizvođač indikatora u skladu sa Nacionalnom strategijom održivog razvoja do 2030. godine.","inter_american_development_bank":"Interamerička razvojna banka","interest":"Kamatna stopa","international_bank_for_reconstruction":"Međunarodna banka za rekonstrukciju i razvoj","international_monetary_fund":"Međunarodni monetarni fond","kg_capita_year":"kilograma po stanovniku godišnje","kg_per_constant_usd_2015":"kilograma po konstantnom USD iz 2015","km_sq":"kilometara kvadratnih","less_1_gjr":"< 1 GJR","level_of_participation":"nivo ušešća (1 - mali, 2 - srednji, 3 - veliki)","litres_pure_alcohol":"Litara čistog alkohola","lower_high_school":"srednja škola","lsu":"LSU","manufacturing_value":"proizvodna vrijednost","maritime_traffic":"pomorski saobraćaj","maths":"matematika","million_kw":"milion kW","million_tonnes":"miliona tona","million_usd":"miliona dolara","millions_constant_usd_2017":"miliona dolara (2017)","millions_constant_usd_2020":"miliona dolara (2020)","millions_constant_usd_2021":"miliona dolara (2021)","minamata_convention":"Minamata konvencija","minamata_convention_1":"Označavanje nacionalne ključne tačke (član 17)","minamata_convention_2":"Podnošenje nacionalnog izvještaja (član 21)","mne_member":"Da li je CG član?","mne_vote":"Da li ima pravo glasa?","montreal_convention":"Montrealski protokol","montreal_convention_1":"Usklađenost sa zahtjevima za izvještavanje za proizvodnju i potrošnju ozonskog oštećenja suspstance prema članu 7 Montrealskog protokola","montreal_convention_2":"Podnošenje informacija o licencnim sistemima prema članu 4B Montrealskog protokola","more_3_gjr":"> 3 GJR","national_stat_plan_strategy":"Implementiranje strategije za uvođenje nacionalnog statističkog plana","number_of_farms":"Broj gazdinstava","nurses":"medicinske sestre i babice","ombudsman":"ombudsman","other_expenses":"Ostali troškovi","parity_index":"indeks pariteta","per_1000000_population":"na 1 000 000 ljudi","per_100000_adults":"na 100 000 odraslih ljudi","per_100000_life_births":"na 100 000 rođenih","per_100000_population":"na 100 000 ljudi","per_1000_life_births":"na 1000 rođenih","per_1000_population":"na 1000 ljudi","per_1000_uninfected_population":"ukupno novoinficiranih na 1000 neinficiranih","per_1000_women":"na 1000 žena","per_100_population":"na 100 ljudi","per_capita_in_eur":"po glavi stanovnika, u EUR","per_capita_kg":"kg po glavi stanovnika","percent_of_aged_20-64":"procenat stanovništva starosti 20-64 godine","percent_of_gdp":"udio BDP-a","pharmaceutical staff":"farmaceutsko osoblje","pi_1":"ukupni rezultat (PI-1)","pi_2":"varijansa sastava (PI-2)","pm10":"PM 10","pm2.5":"PM 2.5","points":"bodovi","population":"populacija","population_census":"popis stanovništva i domaćinstava","prezentacije":"Kreiranje prezentacija ili dokumenata koji integrišu tekst, slike, tabele ili grafikone","primary_school":"osnovna škola","processed_hazardous_waste":"Obrađeni opasni otpad u ukupnoj stvorenoj količini opasnog otpada","processed_waste":"prerađen otpad + odloženi otpad na sanitarnim deponijama + privremeno uskladišteni otpad","produced_waste":"proizveden otpad","programiranje":"Pisanje koda u programskom jeziku","public_transport_cat_1":"Vrijednost obračunatog indikatora, ukupno - Glavni grad Podgorica","public_transport_cat_2":"Vrijednost indikatora - broj stanovnika koji ima smetnje u obavljanju svakodnevnih aktivnosti","quantity":"količina","railway_traffic":"željeznički saobraćaj","rate":"Stopa","ratio":"odnos","reading":"čitanje","recycled_waste":"Reciklirane količine otpada (R2-R11 + izvoz)","register_of_births":"Upis u matičnu knjigu rođenih","register_of_deaths":"Upis u matičnu knjigu umrlih","road_traffic":"drumski saobraćaj","rotterdam_convention":"Roterdamska konvencija","rotterdam_convention_1":"Označavanje nadležnih nacionalnih organa i zvanične kontakt tačke","rotterdam_convention_2":"Podnošenje import odgovora tokom izvještajnog perioda (0.2 boda po import odgovoru)","rural":"Ruralno","sanitation_cat_1":"članovi domaćinstva s prostorijom za pranje ruku u kojoj se nalaze voda i sapun ili deterdžent","sanitation_cat_2":"članovi domaćinstva koji koriste unaprijeđene sanitarne prostorije koje ne dijele sa drugima","sanitation_cat_3":"članovi domaćinstva koji koriste unaprijeđene sanitarne prostorije u kojima nije omogućeno puštanje vode u zajedničku kanalizaciju gdje se otpad ne prazni","sanitation_cat_4":"članovi domaćinstva koji koriste unaprijeđene sanitarne prostorije u kojima nije omogućeno puštanje vode u zajedničku kanalizaciju, ali se otpad prazni","savnik":"Šavnik","score_1_10":"Nivo 1-10","score_1_5":"Nivo 1-5","share_of_budget":"nepredviđeni dio budžeta","size_class_0.10_0.50":"0.10-0.50","size_class_0.50_1.00":"0.50-1.00","size_class_1.00_2.00":"1.00-2.00","size_class_10.00_15.00":"10.00-15.00","size_class_15.00_20.00":"15.00-20.00","size_class_2.00_3.00":"2.00-3.00","size_class_20.00_30.00":"20.00-30.00","size_class_3.00_4.00":"3.00-4.00","size_class_30.00_50.00":"30.00-50.00","size_class_4.00_5.00":"4.00-5.00","size_class_5.00_6.00":"5.00-6.00","size_class_50.00_100.00":"50.00-100.00","size_class_6.00_8.00":"6.00-8.00","size_class_8.00_10.00":"8.00-10.00","size_class_less_0.10":"<0.10","size_class_more_100.00":">100.00","social_benefits":"Socijalne beneficije","spread_sheets":"Korišćenje softvera za tabelarnu obradu podataka","stockholm_convention":"Stokholmska konvencija","stockholm_convention_1":"Označavanje zvanične kontakt tačke i nacionalne ključne tačke","stockholm_convention_2":"Podnošenje nacionalnog plana implementacije","stockholm_convention_3":"Podnošenje revidiranog nacionalnog plana/planova implementacije koji se odnose na usvojene izmjene i dopune od strane Konferencije stranaka u izvještajnom periodu (1 bod po revidiranom i ažuriranom planu)","subsidies":"Subvencije","teacher_class_1":"Broj nastavnika u predškolskom, osnovnom, opšte srednjem obrazovanju i opšteobrazovnim predmetima stručnog obrazovanja koji su pohađali barem minimalnu organizovanu obuku nastavnika (npr. pedagošku obuku) prije zaposlenja ili na radnom mjestu potrebnu za izvođenje nastave na odgovarajućem nivou u datoj zemlji","teacher_class_2":"Broj nastavnika u srednjem stručnom obrazovanju koji su pohađali barem minimalnu organizovanu obuku nastavnika (npr. pedagošku obuku) prije zaposlenja ili na radnom mjestu potrebnu za izvođenje nastave na odgovarajućem nivou u datoj zemlji","territory":"područje","tonnes_per_hectare":"tona po hektaru","tonnes_year":"tona po godini","tons":"tone","tons_per_capita":"tone po glavi stanovnika","total":"ukupno","total_infected":"ukupno novoinficiranih","total_waste":"Ukupne stvorene količine otpada","traditional_agriculture":"Tradicionalna obrada","transfer_files":"Prenos datoteka između računara ili drugih uređaja","un_economic_social_council":"Ekonomski i socijalni savjet UN","un_general_assembly":"Generalna skupština UN","un_security_council":"Savjet bezbjednosti UN","urban":"Gradsko","usd":"dolara","waste_export":"Udio izvoza u ukupnoj obradi","waste_operation_d":"Udio operacija D u ukupnoj obradi","waste_operation_r":"Udio operacija R u ukupnoj obradi","water_waste_cat_1":"obračunski indikator za domaćinstva","water_waste_cat_2":"obračunski indikator za industriju","water_waste_cat_3":"udio bezbjedno tretiranih tokova kućne otpadne vode","water_waste_cat_total":"obračunski indikator ukupno","wealth":"bogatstvo","without_agriculture":"Bez obrade","without_land":"Bez zemljišta","word_processing":"Korišćenje softvera za obradu teksta","world_trade_organization":"Svjetska trgovinska organizacija","yes_no":"da/ne","youth":"mladi"};</script>
+
+
+<div class="heading goal-banner indicator goal-3">
+    <div class="container">
+        <div class="row">
+            
+            <div class="col-4 col-md-3 col-lg-2 goal-icon goal-tiles">
+                <a href="/3/" aria-label=" 3" title=" 3">
+                    <img src="https://montestat.github.io/site/assets/img/goals/cnr/3.png"
+                        alt="Dobro zdravlje i blagostanje - Cilj 3"
+                        id="goal-3"
+                        class="goal-icon-image goal-icon-image-" />
+                </a>
+            </div>
+            <div class="col-8 col-md-9 col-lg-10 indicator-details">
+            
+                <div>
+                    <h1>
+                        
+                        Indikator 3.2.2
+                        
+                        <span class="lead-copy">Stopa smrtnosti novorođenčadi</span>
+                    </h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="main-content" class="container goal-3" role="main">
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+
+<div class="row"
+  id="indicatorData"
+  data-indicatorid='indicator_3-2-2'
+  data-id="3-2-2"
+  data-country="Crna Gora"
+  data-charttitle="Stopa smrtnosti novorođenčadi"
+  data-charttitles="[]"
+  data-measurementunit="na 1000 rođenih"
+  data-xaxislabel=""
+  data-showdata="true"
+  data-graphtype="bar"
+  data-graphtypes="null"
+  data-geocoderegex=""
+  data-showmap="false"
+  data-startvalues="[]"
+  data-graphlimits="null"
+  data-stackeddisaggregation=""
+  data-graphannotations="null"
+  data-graphtargetlines="null"
+  data-graphseriesbreaks="null"
+  data-indicatordownloads="null"
+  data-dataschema="{&quot;fields&quot;:[{&quot;name&quot;:&quot;Year&quot;,&quot;type&quot;:&quot;integer&quot;,&quot;title&quot;:&quot;Godina&quot;},{&quot;name&quot;:&quot;Units&quot;,&quot;type&quot;:&quot;string&quot;,&quot;constraints&quot;:{&quot;enum&quot;:[&quot;per 1000 life births&quot;,&quot;&quot;]},&quot;title&quot;:&quot;Jedinica&quot;},{&quot;name&quot;:&quot;Value&quot;,&quot;type&quot;:&quot;number&quot;,&quot;title&quot;:&quot;Vrijednost&quot;}]}"
+  data-compositebreakdownlabel=""
+  data-precision="null"
+  data-proxy=""
+  data-proxyseries="null"
+>
+  
+  <span role="status" class="visually-hidden" id="indicator-data-view-status"></span>
+  <span role="status" class="visually-hidden" id="indicator-data-unit-status"></span>
+  <span role="status" class="visually-hidden" id="indicator-data-series-status"></span>
+  <div id="indicator-sidebar" class="indicator-sidebar col-md-3">
+    <div id="serieses"></div>
+<div id="units"></div>
+<div id="toolbar">
+  <span id="series-help">
+    <h4>Potkategorije</h4>
+    <p>Odaberite kategorije iz padajućih menija u nastavku da vidite različite tipove podataka. Neki podaci neće biti dostupni dok se ne odabere viši nivo pretrage.</p>
+  </span>
+  <div id="fields">
+    <p class="async-loading" data-img="/assets/img/loading-small.gif"></p>
+  </div>
+</div>
+
+  </div>
+  <div id="indicator-main" class="indicator-main col-md-9">
+    
+
+
+
+
+<div id="headlineTable">
+
+  <div id="datatables">
+
+    
+    <a role="button" href="https://www.sdgmontenegro.me/sdg-production-data/cnr/headline/3-2-2.csv" class="btn btn-primary btn-download" download="indicator_3-2-2.csv" tabindex="0" role="button">Preuzmite naslovni CSV</a>
+    
+    <a role="button" href="https://www.sdgmontenegro.me/sdg-production-data/cnr/data/3-2-2.csv" class="btn btn-primary btn-download" download='indicator_3-2-2.csv' tabindex='0' role='button'>Preuzmite izvorni CSV</a>
+
+    <p class="no-js-disaggregation-hint">Preuzmite izvorni CSV za disagregacije</p>
+
+    
+    <h3>Naslovni podaci</h3>
+    <table class="table-responsive table table-hover dataTable no-footer" role="grid">
+      <caption>Stopa smrtnosti novorođenčadi</caption>
+      <thead>
+        
+        
+        <th scope="col">Year</th>
+        
+        
+        
+        <th scope="col">Value</th>
+        
+        
+        
+        <th scope="col" class="table-value">Units</th>
+        
+        
+      </thead>
+      <tbody>
+        
+        <tr>
+          
+          
+          <td>2010</td>
+          
+          
+          
+          <td>6.7</td>
+          
+          
+          
+          <td class="table-value">per 1000 life births</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2011</td>
+          
+          
+          
+          <td>4.4</td>
+          
+          
+          
+          <td class="table-value">per 1000 life births</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2012</td>
+          
+          
+          
+          <td>4.4</td>
+          
+          
+          
+          <td class="table-value">per 1000 life births</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2013</td>
+          
+          
+          
+          <td>4.4</td>
+          
+          
+          
+          <td class="table-value">per 1000 life births</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2014</td>
+          
+          
+          
+          <td>4.9</td>
+          
+          
+          
+          <td class="table-value">per 1000 life births</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2015</td>
+          
+          
+          
+          <td>2.2</td>
+          
+          
+          
+          <td class="table-value">per 1000 life births</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2016</td>
+          
+          
+          
+          <td>3.4</td>
+          
+          
+          
+          <td class="table-value">per 1000 life births</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2017</td>
+          
+          
+          
+          <td>1.3</td>
+          
+          
+          
+          <td class="table-value">per 1000 life births</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2018</td>
+          
+          
+          
+          <td>1.7</td>
+          
+          
+          
+          <td class="table-value">per 1000 life births</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2019</td>
+          
+          
+          
+          <td>2.4</td>
+          
+          
+          
+          <td class="table-value">per 1000 life births</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2020</td>
+          
+          
+          
+          <td>2.8</td>
+          
+          
+          
+          <td class="table-value">per 1000 life births</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2021</td>
+          
+          
+          
+          <td>1.4</td>
+          
+          
+          
+          <td class="table-value">per 1000 life births</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2022</td>
+          
+          
+          
+          <td>3.6</td>
+          
+          
+          
+          <td class="table-value">per 1000 life births</td>
+          
+          
+        </tr>
+        
+      </tbody>
+    </table>
+    
+  </div>
+
+  
+  <div id="datatableFooter">
+    
+    <p>Izvor: Monstat</p>
+    
+    
+    <p>Geografsko područje: Crna Gora</p>
+    
+    
+    <p>Jedinica mjere: na 1000 rođenih</p>
+    
+    
+  </div>
+  
+
+</div>
+
+
+<section>
+
+  <p class="async-loading" data-img="/assets/img/loading-small.gif"></p>
+
+  <div class="async-loaded mt-4" style="display:none;">
+
+    <div style="display: none;">
+    <span id="table-alternative">Kao alternativu tabelarnih podataka pogledajte Tabelu.</span>
+  </div>
+  <ul class="nav nav-tabs non-stacking-tabs data-view" role="tablist">
+    
+    <li role="presentation"
+      class="
+        nav-item
+        
+        
+      ">
+      <button
+        class="nav-link active"
+        data-bs-toggle="tab"
+        role="tab"
+        type="button"
+        
+          id="tab-chartview"
+          data-bs-target="#chartview"
+          aria-controls="chartview"
+          aria-describedby="table-alternative"
+          data-on="click"
+data-event-category="Tab change"
+data-event-action="Change data view"
+data-event-label="Change to Chart tab"
+
+        
+      >Grafik</button>
+    </li>
+    
+    <li role="presentation"
+      class="
+        nav-item
+        
+        
+      ">
+      <button
+        class="nav-link "
+        data-bs-toggle="tab"
+        role="tab"
+        type="button"
+        
+          id="tab-tableview"
+          data-bs-target="#tableview"
+          aria-controls="tableview"
+          data-on="click"
+data-event-category="Tab change"
+data-event-action="Change data view"
+data-event-label="Change to Table tab"
+
+        
+      >Tabela</button>
+    </li>
+    
+  </ul>
+  
+    <div class="tab-content data-view">
+    
+      
+        <div role="tabpanel" class="tab-pane active" id="chartview">
+          
+
+    <div id="dataset-size-warning" style="display:none" role="alert">
+      <i class="fa fa-bolt"><span class="sr-only">Upozorenje:</span></i>
+      Previše je skupova podataka za prikaz na grafiku. Neće se sve prikazati dok ne uklonite neke odabire.
+    </div>
+
+    
+    <div id="selectionsChart">
+      <figure role="group">
+        <div id="chart-canvas">
+          <h4 id="chart-heading" class="chart-title">
+            Stopa smrtnosti novorođenčadi
+          </h4>
+          <div id="chart" class="plot-container">
+            <canvas
+    role="img"
+    aria-labelledby="chart-heading"
+    aria-describedby="table-alternative chart-annotations"
+    tabindex="0"
+ ></canvas>
+
+          </div>
+          <div id="plotLegend"></div>
+          
+
+
+
+<div id="selectionChartFooter" class="table-footer-text">
+  <h5 class="sr-only">Chart details</h5>
+    <dl>
+        
+        <dt>Izvor:</dt>
+        <dd>Monstat</dd>
+        
+
+        
+        <dt>Geografsko područje:</dt>
+        <dd>Crna Gora</dd>
+        
+
+        <dt class="data-controlled-footer-field unit-from-data">Jedinica mjere:</dt>
+        <dd class="data-controlled-footer-field unit-from-data"></dd>
+
+        
+
+        
+
+        
+
+        
+        
+        <dt
+          class="data-controlled-footer-field"
+          data-ts-attribute="COMMENT_TS"
+        >Objašnjenje za izvore podataka:</dt>
+        <dd
+          class="data-controlled-footer-field"
+          data-ts-attribute="COMMENT_TS"
+        ></dd>
+        
+        <dt
+          class="data-controlled-footer-field"
+          data-ts-attribute="DATA_LAST_UPDATE"
+        >Posljednje ažuriranje podataka:</dt>
+        <dd
+          class="data-controlled-footer-field"
+          data-ts-attribute="DATA_LAST_UPDATE"
+        ></dd>
+        
+        
+    </dl>
+    
+</div>
+
+        </div>
+      </figure>
+      <div id="chartSelectionDownload" class="clearfix">
+        <button
+          id="btnSave"
+          title="Preuzmite grafik kao sliku"
+          aria-label="Preuzmite grafik kao sliku"
+          class='btn btn-primary btn-download'>
+          Preuzmite sliku grafika
+        </button><!--
+   --></div>
+    </div>
+
+
+
+        </div>
+      
+    
+      
+        <div role="tabpanel" class="tab-pane " id="tableview">
+          <div style="display: none;">
+            <span id="column-sort-info">Kliknite da biste sortirali po ovoj koloni</span>
+          </div>
+          <div id="selectionsTable"></div>
+<dl id="tableTargetLines" class="clearfix"></dl>
+
+
+
+
+<div id="selectionTableFooter" class="table-footer-text">
+  <h5 class="sr-only">Chart details</h5>
+    <dl>
+        
+        <dt>Izvor:</dt>
+        <dd>Monstat</dd>
+        
+
+        
+        <dt>Geografsko područje:</dt>
+        <dd>Crna Gora</dd>
+        
+
+        <dt class="data-controlled-footer-field unit-from-data">Jedinica mjere:</dt>
+        <dd class="data-controlled-footer-field unit-from-data"></dd>
+
+        
+
+        
+
+        
+
+        
+        
+        <dt
+          class="data-controlled-footer-field"
+          data-ts-attribute="COMMENT_TS"
+        >Objašnjenje za izvore podataka:</dt>
+        <dd
+          class="data-controlled-footer-field"
+          data-ts-attribute="COMMENT_TS"
+        ></dd>
+        
+        <dt
+          class="data-controlled-footer-field"
+          data-ts-attribute="DATA_LAST_UPDATE"
+        >Posljednje ažuriranje podataka:</dt>
+        <dd
+          class="data-controlled-footer-field"
+          data-ts-attribute="DATA_LAST_UPDATE"
+        ></dd>
+        
+        
+    </dl>
+    
+</div>
+
+<div id="tableSelectionDownload" class="clearfix"></div>
+
+        </div>
+      
+    
+  </div>
+  
+
+  </div>
+
+</section>
+
+  
+  <div class="mt-4">
+<ul class="nav nav-tabs" role="tablist">
+    
+    
+        
+        
+        
+        
+        <li role="presentation" class="nav-item">
+            <button
+                type="button"
+                class="nav-link active"
+                data-bs-toggle="tab"
+                id="tab-national"
+                data-bs-target="#national"
+                aria-controls="national"
+                role="tab"
+                data-on="click"
+data-event-category="Tab change"
+data-event-action="Change metadata view"
+data-event-label="Change to indicator.national_metadata tab"
+
+            >Nacionalni metapodaci</button>
+        </li>
+    
+        
+        
+        
+        
+        <li role="presentation" class="nav-item">
+            <button
+                type="button"
+                class="nav-link "
+                data-bs-toggle="tab"
+                id="tab-global"
+                data-bs-target="#global"
+                aria-controls="global"
+                role="tab"
+                data-on="click"
+data-event-category="Tab change"
+data-event-action="Change metadata view"
+data-event-label="Change to indicator.global_metadata tab"
+
+            >Globalni metapodaci</button>
+        </li>
+    
+        
+        
+        
+        
+        <li role="presentation" class="nav-item">
+            <button
+                type="button"
+                class="nav-link "
+                data-bs-toggle="tab"
+                id="tab-sources"
+                data-bs-target="#sources"
+                aria-controls="sources"
+                role="tab"
+                data-on="click"
+data-event-category="Tab change"
+data-event-action="Change metadata view"
+data-event-label="Change to indicator.sources tab"
+
+            >Izvori</button>
+        </li>
+    
+    
+    
+</ul>
+
+<div class="tab-content">
+    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        <div role="tabpanel" class="tab-pane active" id="national">
+            <article>
+                <p>Ova tabela pruža više informacija o indikatoru koji je dostupan iz crnogorske statistike a najbliže odgovara globalnom indikatoru COR. Imajte na umu da i kada je globalni indikator COR u potpunosti dostupan iz crnogorske statistike, ovu tabelu treba konsultovati za informacije o nacionalnoj metodologiji i druge informacije o crnogorskim metapodacima.</p>
+
+                <table class="table metadata-content">
+  <tbody>
+  
+  
+  
+  
+  
+      
+      
+      
+      
+      <tr>
+        <th scope="row">Cilj </th>
+        <td>
+          
+            <p>Obezbijediti zdrave živote i promovisati dobrobit za sve ljude u svim uzrastima</p>
+
+          
+        </td>
+        </tr>
+        
+      
+  
+      
+      
+      
+      
+      <tr>
+        <th scope="row">Zadatak </th>
+        <td>
+          
+            <p>Do 2030. godine, zaustaviti umiranje novorođenčadi i djece mlađe od 5 godina od bolesti koje se mogu spriječiti, pri čemu sve zemlje za cilj imaju smanjenje neonatalnog mortaliteta najmanje na samo 12 smrtnih slučajeva na 1.000 živo rođene djece i smrtnost djece mlađe od 5 godina najmanje na samo 25 smrtnih slučajeva na 1.000 živo rođene djece</p>
+
+          
+        </td>
+        </tr>
+        
+      
+  
+      
+      
+      
+      
+      <tr>
+        <th scope="row">Indikator </th>
+        <td>
+          
+            <p>Stopa smrtnosti novorođenčadi</p>
+
+          
+        </td>
+        </tr>
+        
+      
+  
+      
+      
+      
+        
+          
+      
+      
+      
+        
+          
+      
+      
+      
+      
+      <tr>
+        <th scope="row">Izvori podataka </th>
+        <td>
+          
+            <p>Gradjanski registri, popis stanovnistva, ankete domaćinstava.</p>
+
+          
+        </td>
+        </tr>
+        
+      
+  
+      
+      
+      
+      
+      <tr>
+        <th scope="row">Disagregacija </th>
+        <td>
+          
+            <p>Može se razvrstati po polu, starosnom dobu, kvintil bogatstva, mjesto prebivališta, obrazovanje majke. Razvrstani podaci nisu uvijek dostupni.</p>
+
+          
+        </td>
+        </tr>
+        
+      
+  
+      
+      
+      
+      
+      <tr>
+        <th scope="row">Napomene </th>
+        <td>
+          
+            <p>Link metapodataka: https://unstats.un.org/sdgs/metadata/files/Metadata-03-02-02.pdf</p>
+
+          
+        </td>
+        </tr>
+        
+      
+  
+      
+      
+      
+        
+          
+      
+      
+      
+      
+      <tr>
+        <th scope="row">Od kada se indikator prati po opisanoj metodologiji </th>
+        <td>
+          
+            2010
+          
+        </td>
+        </tr>
+        
+      
+  
+      
+      
+      
+        
+          
+  
+  
+  
+  
+  </tbody>
+</table>
+
+            </article>
+        </div>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        <div role="tabpanel" class="tab-pane " id="global">
+            <article>
+                <p>Ova tabela pruža informacije o metapodacima za COR indikatore koje je definisala Statistička komisija UN-a. <a href="https://unstats.un.org/sdgs/metadata/">Kompletne globalne metapodatke</a> obezbjeđuje Odjeljenje za statistiku UN-a.</p>
+
+                <table class="table metadata-content">
+  <tbody>
+  
+      
+      
+      
+      
+      <tr>
+        <th scope="row">Cilj </th>
+        <td>
+          
+            <p>Goal 3: Ensure healthy lives and promote well-being for all at all ages</p>
+
+          
+        </td>
+        </tr>
+        
+      
+  
+      
+      
+      
+      
+      <tr>
+        <th scope="row">Zadatak </th>
+        <td>
+          
+            <p>Target 3.2: By 2030, end preventable deaths of newborns and children under 5 years of age, with all countries aiming to reduce neonatal mortality to at least as low as 12 per 1,000 live births and under-5 mortality to at least as low as 25 per 1,000 live births</p>
+
+          
+        </td>
+        </tr>
+        
+      
+  
+      
+      
+      
+      
+      <tr>
+        <th scope="row">Indikator </th>
+        <td>
+          
+            <p>Indicator 3.2.2: Neonatal mortality rate </p>
+
+          
+        </td>
+        </tr>
+        
+      
+  
+      
+      
+      
+      
+      <tr>
+        <th scope="row">Metodologija indikatora kako se prati u UN </th>
+        <td>
+          
+            <p>Stopa smrtnosti novorođenčadi je verovatnoća da će dijete rođeno u određenoj godini ili periodu umrjeti tokom prvih 28 završenih dana života, ukoliko se podvrgne stopama mortaliteta specifičnom za uzrast u tom periodu, izraženo na 1000 živorođenih.</p>
+
+          
+        </td>
+        </tr>
+        
+      
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  </tbody>
+</table>
+
+            </article>
+        </div>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        <div role="tabpanel" class="tab-pane " id="sources">
+            <article>
+                
+                <!-- Count the non-empty sources (up to 5) -->
+
+
+
+
+  <div class="row">
+  
+    
+    
+    <div class="col-md-6">
+      
+        <h4 class="sr-only">Izvor 1</h4>
+      
+      
+      <table class="table metadata-content">
+  <tbody>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+      
+      
+      
+      
+      <tr>
+        <th scope="row">Izvor </th>
+        <td>
+          
+            <p>Monstat</p>
+
+          
+        </td>
+        </tr>
+        
+      
+  
+  
+  
+  </tbody>
+</table>
+
+    </div>
+    
+  </div>
+
+
+            </article>
+        </div>
+        
+    
+    
+</div>
+
+</div>
+  </div>
+</div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js" integrity="sha512-WFN04846sdKMIP5LKNphMaWzU7YpMyCU245etK3g/2ARYbPK9Ub18eG+ljU96qKRCWh+quCY7yefSmlkQw1ANQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js" integrity="sha256-Y26AMvaIfrZ1EQU49pf6H4QzVTrOI8m9wQYKkftBt4s=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/patternomaly@1.3.2/dist/patternomaly.js"></script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.3/dist/html2canvas.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.2/dist/FileSaver.min.js"></script>
+
+
+
+
+
+
+
+<script>translations['general'] = translations['general'] || {};
+    translations['general']['hide'] = 'sakriti';</script>
+
+<script>translations['search'] = translations['search'] || {};
+    translations['search']['search'] = 'Pretraga';</script>
+
+<script src='/assets/js/sdg.js?v=20240716135212'></script>
+
+
+    
+    
+    <script src="/assets/js/custom.js?v=20240716135212"></script><script>
+    new indicatorInit();
+    new accessibilitySwitcher();
+</script>
+
+<script type="text/javascript" src="https://pym.nprapps.org/pym.v1.min.js"></script>
+<script>
+    new pym.Child();
+</script>
+
+</body>
+</html>

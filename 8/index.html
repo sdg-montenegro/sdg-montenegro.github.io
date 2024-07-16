@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
-        <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?features=Promise%2CArray.prototype.forEach%2CString.prototype.includes%2CURLSearchParams%2CCustomEvent%2CArray.prototype.includes%2CArray.prototype.filter%2CArray.prototype.some%2CArray.prototype.find%2CArray.prototype.reduce%2CObject.assign%2CArray.isArray%2CObject.values%2CObject.entries%2CArray.from%2CSet%2CArray.prototype.findIndex"></script>
+        <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?version=4.8.0&features=Promise%2CString.prototype.includes%2CCustomEvent%2CArray.prototype.includes%2CArray.prototype.find%2CObject.assign%2CObject.values%2CObject.entries%2CArray.from%2CSet%2CArray.prototype.findIndex%2Cfetch"></script>
 <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.15.0/js/canvas-to-blob.min.js"></script>
 
         <script>
@@ -26,8 +26,9 @@ var opensdg = {
   },
 
   // A hook which can be replaced to alter whether/how the values that are
-  // displayed on indicator tables/graphs get rounded.
-  dataRounding: function(value) {
+  // displayed on indicator tables/graphs get rounded. A "context" parameter
+  // is also passed which contains additional information.
+  dataRounding: function(value, context) {
     // Alterations go here.
     return value;
   },
@@ -38,7 +39,24 @@ var opensdg = {
     this.dataDisplayAlterations.push(callback);
   },
 
+  // Disaggregations which should be ignored on indicator pages.
+  ignoredDisaggregations: null,
+
   language: 'cnr',
+
+  mapColors: {
+    "default": [
+        "#c4e1c6",
+        "#b0d1b3",
+        "#9bc2a1",
+        "#87b28f",
+        "#74a37c",
+        "#60946b",
+        "#4d8559",
+        "#3a7747",
+        "#276836"
+    ]
+},
 };
 
 </script>
@@ -99,14 +117,13 @@ var translations = {
         ================================================== -->
 
         
+    
     <title>Cilj 8 - Dostojanstven rad i ekonomski rast - Indikatori za Ciljeve održivog razvoja</title>
+    
 
 
 
-        <meta name="description" content="">
-        <meta property="og:description" content="">
         
-        <link rel="canonical" href="/">
 
         <!--[if IE 9]>
         <script src="/assets/js/lib/classList.js"></script>
@@ -117,13 +134,13 @@ var translations = {
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png">
 <link rel="icon" type="image/x-icon" href="/assets/img/favicons/favicon.ico" />
 
+        
 
         
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
         <link res="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" crossorigin="">
-        <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.2.3/css/fixedColumns.dataTables.min.css" crossorigin="">
-        <link rel="stylesheet" href="/assets/css/style.css?v=20240716094100">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" crossorigin="">
+        <link rel="stylesheet" href="/assets/css/style.css?v=20240716135212">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
           integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
           crossorigin=""/>
@@ -133,6 +150,9 @@ var translations = {
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@2.9.7/dist/leaflet-search.min.css" crossorigin="">
         <link rel="stylesheet" href="https://cdn.kiprotect.com/klaro/v0.7/klaro.min.css" crossorigin=""/>
         
+
+        
+
 
         <!--[if IE]>
         <link rel="stylesheet" href="/assets/css/ie.css">
@@ -169,10 +189,10 @@ layout-goal
 <header role="banner" class="">
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light flex-wrap align-items-start">
-            <a class="navbar-brand" href="/" id="home">
+            <a class="navbar-brand" href="/" id="home" aria-label="" title="">
     <img src="/assets/img/logo/cnr/SDG_logo.png" alt="Crna Gora" />
 </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="d-flex flex-wrap w-100 justify-content-between">
@@ -196,7 +216,7 @@ layout-goal
         <label class="visually-hidden" for="indicator_search">Pretraga</label>
         <input class="form-control" type="search" name="q" id="indicator_search" title="Pretraga">
         <span class="input-group-append">
-            <button class="btn btn-outline-secondary ms-n5" aria-label="Pretraga" id="search-btn" type="submit">
+            <button class="btn btn-outline-secondary ms-n5" aria-label="" id="search-btn" type="submit">
                 <i class="fa fa-search"></i>
             </button>
         </span>
@@ -235,7 +255,7 @@ layout-goal
             </a>
         </li></ul>
 </div></span><a title="Omogućite visoki kontrast" aria-label="Omogućite visoki kontrast"
-    data-contrast-switch-to="" href="javascript:void(0)" data-on="click"
+    data-contrast-switch-to="" role="button" href="javascript:void(0)" data-on="click"
 data-event-category="Accessibility"
 data-event-action="Change contrast setting"
 data-event-label="high"
@@ -267,13 +287,13 @@ data-event-label="high"
     
 <div class="previous-next-links d-flex justify-content-between">
     <div class="text-left">
-        <a class="btn btn-primary" href="/7" aria-labelledby="previous-link">
+        <a class="btn btn-primary" href="/7/" aria-labelledby="previous-link">
             <i class="fa fa-chevron-left" aria-hidden="true"></i>
             <span id="previous-link" class="d-none d-md-inline">Prethodni cilj</span>
         </a>
     </div>
     <div class="text-right">
-        <a class="btn btn-primary" href="/9" aria-labelledby="next-link">
+        <a class="btn btn-primary" href="/9/" aria-labelledby="next-link">
             <span id="next-link" class="d-none d-md-inline">Sljedeći cilj</span>
             <i class="fa fa-chevron-right" aria-hidden="true"></i>
         </a>
@@ -291,11 +311,19 @@ data-event-label="high"
                 <img src="https://montestat.github.io/site/assets/img/goals/cnr/8.png" alt="Dostojanstven rad i ekonomski rast - Cilj 8" id="goal-8" class="goal-icon-image goal-icon-image-" />
             </div>
             <div class="col-8 col-md-9 col-lg-10 goal-details">
-                <h1>Promovisati kontinuiran, inkluzivan i održiv privredni rast, puno i produktivno zaposlenje i dostojanstven rad za sve</h1>
+                <h1>
+                    
+                        Promovisati kontinuiran, inkluzivan i održiv privredni rast, puno i produktivno zaposlenje i dostojanstven rad za sve
+                    
+                </h1>
             </div>
         </div>
     </div>
 </div>
+
+
+
+
 
 
 <div id="main-content" class="container" role="main">
@@ -304,10 +332,14 @@ data-event-label="high"
 
 
 
-  <div class="container g-0">
-    <h2 class="goal-page-heading">Zadaci i indikatori</h2>
-
-    
+  <div class="container g-0 ">
+    <div class="row align-items-end">
+      <div class="col">
+        <h2 class="goal-page-heading">Zadaci i indikatori</h2>
+      </div>
+      
+    </div>
+    <hr class="goal-page-column-header-rule">
     
       
       <div class="row align-items-start goal-target">
@@ -319,6 +351,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Podržati privredni rast po glavi stanovnika u skladu sa nacionalnim okolnostima i, naročito, najmanje 7 odsto rasta bruto domaćeg proizvoda godišnje u najmanje razvijenim zemljama</span>
           </div>
+          
       </div>
         
 
@@ -336,7 +369,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/8-1-1">Godišnja stopa rasta BDP-a po glavi stanovnika</a></span>
+              <span class="indicator-name"><a href="/8-1-1/">Godišnja stopa rasta BDP-a po glavi stanovnika</a></span>
               
 
 
@@ -349,7 +382,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -373,6 +406,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Ostvariti veći nivo ekonomske produktivnosti kroz diversifikaciju, tehnološku nadogradnju i inovacije, između ostalog i kroz usmjerenost na visoku dodatu vrijednost i sektore koji zahtijevaju veliki broj radnika</span>
           </div>
+          
       </div>
         
 
@@ -390,7 +424,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/8-2-1">Godišnja stopa rasta realnog BDP-a po zapošljenom licu</a></span>
+              <span class="indicator-name"><a href="/8-2-1/">Godišnja stopa rasta realnog BDP-a po zapošljenom licu</a></span>
               
 
 
@@ -403,7 +437,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -427,6 +461,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Promovisati razvojno orijentisane politike koje podržavaju produktivne aktivnosti, otvaranje dostojanstvenih radnih mjesta, preduzetništvo, kreativnost i inovativnost, i podstiču formalizaciju i rast mikro, malih i srednjih preduzeća, između ostalog i kroz pristup finansijskim uslugama</span>
           </div>
+          
       </div>
         
 
@@ -444,7 +479,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/8-3-1">Udio neformalne zaposlenosti u ukupnoj zaposlenosti, po sektoru i polu</a></span>
+              <span class="indicator-name"><a href="/8-3-1/">Udio neformalne zaposlenosti u ukupnoj zaposlenosti, po sektoru i polu</a></span>
               
 
 
@@ -481,6 +516,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Postepeno, do 2030. godine, poboljšati globalnu efikasnost korišćenja resursa u potrošnji i proizvodnji i nastojati da se privredni rast razdvoji od degradacije životne sredine, u skladu sa desetogodišnjim Okvirnim programima o održivoj potrošnji i proizvodnji, pri čemu razvijene zemljame predvode ove napore</span>
           </div>
+          
       </div>
         
 
@@ -498,7 +534,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/8-4-1">Materijalni otisak, materijalni otisak po glavi stanovnika i materijalni otisak po BDP-u</a></span>
+              <span class="indicator-name"><a href="/8-4-1/">Materijalni otisak, materijalni otisak po glavi stanovnika i materijalni otisak po BDP-u</a></span>
               
 
 
@@ -538,7 +574,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/8-4-2">Domaća materijalna potrošnja (DMC) i DMC po glavi stanovnika, po BDP-u</a></span>
+              <span class="indicator-name"><a href="/8-4-2/">Domaća materijalna potrošnja (DMC) i DMC po glavi stanovnika, po BDP-u</a></span>
               
 
 
@@ -551,7 +587,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -575,6 +611,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Do 2030. godine, postići punu i produktivnu zaposlenost i dostojanstven rad za sve žene i muškarce, uključujući mlade i osobe sa invaliditetom, i jednaku platu za rad jednake vrijednosti</span>
           </div>
+          
       </div>
         
 
@@ -592,7 +629,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/8-5-1">Prosječne zarade zaposlenih po satu, po polu, starosti, zanimanju i osobama sa invaliditetom</a></span>
+              <span class="indicator-name"><a href="/8-5-1/">Prosječne zarade zaposlenih po satu, po polu, starosti, zanimanju i osobama sa invaliditetom</a></span>
               
 
 
@@ -605,7 +642,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -632,7 +669,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/8-5-2">Stopa nezaposlenosti, prema polu, starosti i osobama sa invaliditetom</a></span>
+              <span class="indicator-name"><a href="/8-5-2/">Stopa nezaposlenosti, prema polu, starosti i osobama sa invaliditetom</a></span>
               
 
 
@@ -645,7 +682,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -669,6 +706,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Do 2020. godine, značajno smanjiti udio mladih koji nijesu obuhvaćeni zapošljavanjem, obrazovanjem ili obukom</span>
           </div>
+          
       </div>
         
 
@@ -686,7 +724,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/8-6-1">Udio mladih (starosne dobi 15-24) koji nijesu obuhvaćeni obrazovanjem, zapošljavanjem ili obukom</a></span>
+              <span class="indicator-name"><a href="/8-6-1/">Udio mladih (starosne dobi 15-24) koji nijesu obuhvaćeni obrazovanjem, zapošljavanjem ili obukom</a></span>
               
 
 
@@ -699,7 +737,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -723,6 +761,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Preduzeti neposredne i djelotvorne mjere za iskorjenjivanje prisilnog rada, eliminisanje modernog ropstva i trgovine ljudima i obezbijediti zabranu i ukidanje najgorih oblika dječjeg rada, uključujući regrutaciju i korišćenje djece vojnika, a do kraja 2025. okončati dječji rad u svim njegovim oblicima</span>
           </div>
+          
       </div>
         
 
@@ -740,7 +779,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/8-7-1">Udio i broj djece uzrasta 5-17 godina angažovane na dječijem radu, po polu i starosti</a></span>
+              <span class="indicator-name"><a href="/8-7-1/">Udio i broj djece uzrasta 5-17 godina angažovane na dječijem radu, po polu i starosti</a></span>
               
 
 
@@ -753,7 +792,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -777,6 +816,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Zaštititi radnička prava i promovisati sigurno i bezbjedno radno okruženje za sve radnike, uključujući i radnike migrante, posebno žene migrante i osobe sa nesigurnim zaposlenjem</span>
           </div>
+          
       </div>
         
 
@@ -794,7 +834,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/8-8-1">Fatalne i nefatalne povrede na radu na 100 000 radnika, prema polu i migrantskom statusu</a></span>
+              <span class="indicator-name"><a href="/8-8-1/">Fatalne i nefatalne povrede na radu na 100 000 radnika, prema polu i migrantskom statusu</a></span>
               
 
 
@@ -834,7 +874,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/8-8-2">Nivo nacionalnog poštovanja radnih prava (sloboda udruživanja i kolektivno pregovaranje) na osnovu tekstualnih izvora Međunarodne organizacije rada (ILO) i nacionalnog zakonodavstva, prema polu i statusu migranata</a></span>
+              <span class="indicator-name"><a href="/8-8-2/">Nivo nacionalnog poštovanja radnih prava (sloboda udruživanja i kolektivno pregovaranje) na osnovu tekstualnih izvora Međunarodne organizacije rada (ILO) i nacionalnog zakonodavstva, prema polu i statusu migranata</a></span>
               
 
 
@@ -847,7 +887,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -871,6 +911,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Do 2030. godine, osmisliti i sprovesti politike za promovisanje održivog turizma koji otvara radna mjesta i promoviše lokalnu kulturu i proizvode</span>
           </div>
+          
       </div>
         
 
@@ -888,7 +929,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/8-9-1">Turizam direktnog BDP-a kao proporcija ukupnog BDP-a i u stopi rasta</a></span>
+              <span class="indicator-name"><a href="/8-9-1/">Turizam direktnog BDP-a kao proporcija ukupnog BDP-a i u stopi rasta</a></span>
               
 
 
@@ -901,7 +942,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -925,6 +966,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Ojačati kapacitete domaćih finansijskih institucija za podsticanje i širenje pristupa bankarstvu, osiguranju i finansijskim uslugama za sve</span>
           </div>
+          
       </div>
         
 
@@ -942,7 +984,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/8-10-1">(a) Broj filijala poslovnih banaka na 100000 odraslih osoba (b) broj bankomata na 100000 odraslih osoba</a></span>
+              <span class="indicator-name"><a href="/8-10-1/">(a) Broj filijala poslovnih banaka na 100000 odraslih osoba (b) broj bankomata na 100000 odraslih osoba</a></span>
               
 
 
@@ -955,7 +997,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -982,7 +1024,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/8-10-2">Procenat odraslih (15 godina i stariji) sa računom u banci ili drugoj finansijskoj instituciji ili kod pružaoca usluga mobilnog novca</a></span>
+              <span class="indicator-name"><a href="/8-10-2/">Procenat odraslih (15 godina i stariji) sa računom u banci ili drugoj finansijskoj instituciji ili kod pružaoca usluga mobilnog novca</a></span>
               
 
 
@@ -995,7 +1037,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -1019,6 +1061,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Povećati podršku zemljama u razvoju i posebno najmanje razvijenim zemljama kroz Pomoć za trgovinu, uključujući Prošireni integrisani okvir za tehničku pomoć najmanje razvijenim zemljama povezanu sa trgovinom</span>
           </div>
+          
       </div>
         
 
@@ -1036,7 +1079,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/8-a-1">Pomoć za trgovinske obaveze i isplate</a></span>
+              <span class="indicator-name"><a href="/8-a-1/">Pomoć za trgovinske obaveze i isplate</a></span>
               
 
 
@@ -1049,7 +1092,7 @@ data-event-label="high"
 
 
 <span class="status complete">
-    <span class="status-inner">Prijavljeno</span>
+    <span class="status-inner">Prijavljeni podaci</span>
 </span>
 
 
@@ -1073,6 +1116,7 @@ data-event-label="high"
           <div class="col goal-page-target-name">
             <span class="target-name">Do 2020. godine, razviti i operacionalizovati globalnu strategiju zapošljavanja mladih i sprovesti Globalni pakt o radnim mjestima Međunarodne organizacije rada</span>
           </div>
+          
       </div>
         
 
@@ -1090,7 +1134,7 @@ data-event-label="high"
             </div>
             <div class="col goal-page-indicator-name">
               
-              <span class="indicator-name"><a href="/8-b-1">Postojanje razvijene i operacionalizovane nacionalne strategije za zapošljavanje mladih, kao posebne strategije ili kao dijela nacionalne strategije zapošljavanja</a></span>
+              <span class="indicator-name"><a href="/8-b-1/">Postojanje razvijene i operacionalizovane nacionalne strategije za zapošljavanje mladih, kao posebne strategije ili kao dijela nacionalne strategije zapošljavanja</a></span>
               
 
 
@@ -1150,12 +1194,11 @@ data-event-label="high"
     </div>
 </footer>
 
-<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-<script src="//cdn.datatables.net/fixedcolumns/3.2.3/js/dataTables.fixedColumns.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js" integrity="sha512-90vH1Z83AJY9DmlWa8WkjkV79yfS2n2Oxhsi2dZbIv0nC4E6m5AbH8Nh156kkM7JePmqD6tcZsfad1ueoaovww==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js" integrity="sha512-WFN04846sdKMIP5LKNphMaWzU7YpMyCU245etK3g/2ARYbPK9Ub18eG+ljU96qKRCWh+quCY7yefSmlkQw1ANQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js" integrity="sha256-Y26AMvaIfrZ1EQU49pf6H4QzVTrOI8m9wQYKkftBt4s=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/patternomaly@1.3.2/dist/patternomaly.js"></script>
 
@@ -1176,12 +1219,12 @@ data-event-label="high"
 <script>translations['search'] = translations['search'] || {};
     translations['search']['search'] = 'Pretraga';</script>
 
-<script src='/assets/js/sdg.js?v=20240716094100'></script>
+<script src='/assets/js/sdg.js?v=20240716135212'></script>
 
 
     
     
-    <script src="/assets/js/custom.js?v=20240716094100"></script><script>
+    <script src="/assets/js/custom.js?v=20240716135212"></script><script>
     new indicatorInit();
     new accessibilitySwitcher();
 </script>
