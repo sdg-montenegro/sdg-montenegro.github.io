@@ -128,7 +128,7 @@ var translations = {
         <link res="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" crossorigin="">
         <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.2.3/css/fixedColumns.dataTables.min.css" crossorigin="">
-        <link rel="stylesheet" href="/assets/css/style.css?v=20240630083044">
+        <link rel="stylesheet" href="/assets/css/style.css?v=20240716094100">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
           integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
           crossorigin=""/>
@@ -404,29 +404,2349 @@ data-event-label="high"
   id="indicatorData"
   data-indicatorid='indicator_13-2-2'
   data-id="13-2-2"
-  data-country="custom.country_name"
+  data-country="Montenegro"
   data-charttitle="Total greenhouse gas emissions per year"
   data-charttitles="[]"
-  data-measurementunit=""
+  data-measurementunit="data.million_tonnes"
   data-xaxislabel=""
-  data-showdata="false"
+  data-showdata="true"
   data-graphtype="line"
   data-graphtypes="null"
   data-geocoderegex=""
   data-showmap="false"
   data-startvalues="[]"
-  data-graphlimits="[]"
+  data-graphlimits="null"
   data-stackeddisaggregation=""
-  data-graphannotations="[]"
+  data-graphannotations="null"
   data-graphtargetlines="null"
   data-graphseriesbreaks="null"
   data-indicatordownloads="null"
-  data-dataschema="{&quot;fields&quot;:[{&quot;name&quot;:&quot;Year&quot;,&quot;type&quot;:&quot;number&quot;,&quot;title&quot;:&quot;Year&quot;},{&quot;name&quot;:&quot;Value&quot;,&quot;type&quot;:&quot;number&quot;,&quot;title&quot;:&quot;Value&quot;}]}"
+  data-dataschema="{&quot;fields&quot;:[{&quot;name&quot;:&quot;Year&quot;,&quot;type&quot;:&quot;integer&quot;,&quot;title&quot;:&quot;Year&quot;},{&quot;name&quot;:&quot;Units&quot;,&quot;type&quot;:&quot;string&quot;,&quot;constraints&quot;:{&quot;enum&quot;:[&quot;million_tonnes&quot;,&quot;&quot;]},&quot;title&quot;:&quot;Units&quot;},{&quot;name&quot;:&quot;Value&quot;,&quot;type&quot;:&quot;number&quot;,&quot;title&quot;:&quot;Value&quot;}]}"
   data-compositebreakdownlabel=""
-  data-precision="[]"
+  data-precision="[{&quot;unit&quot;:&quot;data.million_tonnes&quot;},{&quot;decimals&quot;:1}]"
 >
   
-  <div id="indicator-main" class="indicator-main col-md-12">
+  <span role="status" class="visually-hidden" id="indicator-data-view-status"></span>
+  <div id="indicator-sidebar" class="indicator-sidebar col-md-3">
+    <div id="serieses"></div>
+<div id="units"></div>
+<div id="toolbar">
+  <span id="series-help">
+    <h4>Sub-categories</h4>
+    <p>Choose categories from the dropdowns below to see different breakdowns of the data. Some will not be available until a higher level is chosen.</p>
+  </span>
+  <div id="fields">
+    <p class="async-loading" data-img="/assets/img/loading-small.gif"></p>
+  </div>
+</div>
+
+  </div>
+  <div id="indicator-main" class="indicator-main col-md-9">
+    
+
+
+
+
+<div id="headlineTable">
+
+  <div id="datatables">
+
+    
+    <a href="https://www.sdgmontenegro.me/sdg-production-data/en/headline/13-2-2.csv" class="btn btn-primary btn-download" download="indicator_13-2-2.csv" tabindex="0" role="button">Download Headline CSV</a>
+    
+    <a href="https://www.sdgmontenegro.me/sdg-production-data/en/data/13-2-2.csv" class="btn btn-primary btn-download" download='indicator_13-2-2.csv' tabindex='0' role='button'>Download Source CSV</a>
+
+    <p class="no-js-disaggregation-hint">Download source CSV for disaggregations</p>
+
+    
+    <h3>Headline data</h3>
+    <table class="table-responsive table table-hover dataTable no-footer" role="grid">
+      <caption>Total greenhouse gas emissions per year</caption>
+      <thead>
+        
+        
+        <th scope="col">Year</th>
+        
+        
+        
+        <th scope="col">Value</th>
+        
+        
+        
+        <th scope="col" class="table-value">Units</th>
+        
+        
+      </thead>
+      <tbody>
+        
+        <tr>
+          
+          
+          <td>1885</td>
+          
+          
+          
+          <td>446.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1890</td>
+          
+          
+          
+          <td>1337.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1891</td>
+          
+          
+          
+          <td>1560.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1892</td>
+          
+          
+          
+          <td>1727.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1893</td>
+          
+          
+          
+          <td>3064.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1894</td>
+          
+          
+          
+          <td>5849.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1895</td>
+          
+          
+          
+          <td>5849.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1896</td>
+          
+          
+          
+          <td>6518.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1897</td>
+          
+          
+          
+          <td>5069.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1898</td>
+          
+          
+          
+          <td>7688.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1899</td>
+          
+          
+          
+          <td>8969.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1900</td>
+          
+          
+          
+          <td>12144.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1901</td>
+          
+          
+          
+          <td>13258.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1902</td>
+          
+          
+          
+          <td>12423.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1903</td>
+          
+          
+          
+          <td>13481.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1904</td>
+          
+          
+          
+          <td>14373.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1905</td>
+          
+          
+          
+          <td>15598.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1906</td>
+          
+          
+          
+          <td>18662.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1907</td>
+          
+          
+          
+          <td>18996.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1908</td>
+          
+          
+          
+          <td>20445.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1909</td>
+          
+          
+          
+          <td>21002.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1910</td>
+          
+          
+          
+          <td>20779.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1911</td>
+          
+          
+          
+          <td>22506.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1912</td>
+          
+          
+          
+          <td>23063.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1913</td>
+          
+          
+          
+          <td>63340.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1919</td>
+          
+          
+          
+          <td>45402.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1920</td>
+          
+          
+          
+          <td>60276.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1921</td>
+          
+          
+          
+          <td>64175.004</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1922</td>
+          
+          
+          
+          <td>93255.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1923</td>
+          
+          
+          
+          <td>101722.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1924</td>
+          
+          
+          
+          <td>104285.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1925</td>
+          
+          
+          
+          <td>114479.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1926</td>
+          
+          
+          
+          <td>111471.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1927</td>
+          
+          
+          
+          <td>125955.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1928</td>
+          
+          
+          
+          <td>143057.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1929</td>
+          
+          
+          
+          <td>156037.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1930</td>
+          
+          
+          
+          <td>146846.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1931</td>
+          
+          
+          
+          <td>135704.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1932</td>
+          
+          
+          
+          <td>123727.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1933</td>
+          
+          
+          
+          <td>114479.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1934</td>
+          
+          
+          
+          <td>119159.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1935</td>
+          
+          
+          
+          <td>124730.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1936</td>
+          
+          
+          
+          <td>123003.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1937</td>
+          
+          
+          
+          <td>137041.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1938</td>
+          
+          
+          
+          <td>129798.99</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1939</td>
+          
+          
+          
+          <td>136205.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1940</td>
+          
+          
+          
+          <td>156650.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1943</td>
+          
+          
+          
+          <td>5738.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1944</td>
+          
+          
+          
+          <td>1393.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1945</td>
+          
+          
+          
+          <td>79161.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1946</td>
+          
+          
+          
+          <td>156427.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1947</td>
+          
+          
+          
+          <td>217650.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1948</td>
+          
+          
+          
+          <td>245337.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1949</td>
+          
+          
+          
+          <td>280266.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1950</td>
+          
+          
+          
+          <td>269235.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1951</td>
+          
+          
+          
+          <td>254863.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1952</td>
+          
+          
+          
+          <td>255921.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1953</td>
+          
+          
+          
+          <td>254139.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1954</td>
+          
+          
+          
+          <td>303161.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1955</td>
+          
+          
+          
+          <td>347171.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1956</td>
+          
+          
+          
+          <td>396918.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1957</td>
+          
+          
+          
+          <td>431011.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1958</td>
+          
+          
+          
+          <td>424771.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1959</td>
+          
+          
+          
+          <td>486941.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1960</td>
+          
+          
+          
+          <td>531897.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1961</td>
+          
+          
+          
+          <td>557523.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1962</td>
+          
+          
+          
+          <td>572118.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1963</td>
+          
+          
+          
+          <td>636461.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1964</td>
+          
+          
+          
+          <td>721081.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1965</td>
+          
+          
+          
+          <td>741915.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1966</td>
+          
+          
+          
+          <td>735175.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1967</td>
+          
+          
+          
+          <td>742584.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1968</td>
+          
+          
+          
+          <td>794225.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1969</td>
+          
+          
+          
+          <td>823472.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1970</td>
+          
+          
+          
+          <td>1076106.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1971</td>
+          
+          
+          
+          <td>1159779.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1972</td>
+          
+          
+          
+          <td>1087025.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1973</td>
+          
+          
+          
+          <td>1298547.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1974</td>
+          
+          
+          
+          <td>1304229.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1975</td>
+          
+          
+          
+          <td>1360884.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1976</td>
+          
+          
+          
+          <td>1404615.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1977</td>
+          
+          
+          
+          <td>1365953.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1978</td>
+          
+          
+          
+          <td>1526447.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1979</td>
+          
+          
+          
+          <td>1660313.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1980</td>
+          
+          
+          
+          <td>1632626.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1981</td>
+          
+          
+          
+          <td>1776798.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1982</td>
+          
+          
+          
+          <td>1632348.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1983</td>
+          
+          
+          
+          <td>1757746.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1984</td>
+          
+          
+          
+          <td>1853675.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1985</td>
+          
+          
+          
+          <td>1890887.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1986</td>
+          
+          
+          
+          <td>1974783.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1987</td>
+          
+          
+          
+          <td>1927989.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1988</td>
+          
+          
+          
+          <td>1989434.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1989</td>
+          
+          
+          
+          <td>1983362.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1990</td>
+          
+          
+          
+          <td>1962026.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1991</td>
+          
+          
+          
+          <td>1388069.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1992</td>
+          
+          
+          
+          <td>1483274.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1993</td>
+          
+          
+          
+          <td>1293620.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1994</td>
+          
+          
+          
+          <td>1256653.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1995</td>
+          
+          
+          
+          <td>1327336.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1996</td>
+          
+          
+          
+          <td>1552994.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1997</td>
+          
+          
+          
+          <td>1669797.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1998</td>
+          
+          
+          
+          <td>1757580.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>1999</td>
+          
+          
+          
+          <td>1211858.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2000</td>
+          
+          
+          
+          <td>1520843.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2001</td>
+          
+          
+          
+          <td>1667268.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2002</td>
+          
+          
+          
+          <td>1766249.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2003</td>
+          
+          
+          
+          <td>1889193.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2004</td>
+          
+          
+          
+          <td>2041277.9</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2005</td>
+          
+          
+          
+          <td>1750836.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2006</td>
+          
+          
+          
+          <td>2062832.1</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2007</td>
+          
+          
+          
+          <td>2055504.1</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2008</td>
+          
+          
+          
+          <td>2605104.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2009</td>
+          
+          
+          
+          <td>1681776.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2010</td>
+          
+          
+          
+          <td>2421904.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2011</td>
+          
+          
+          
+          <td>2407248.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2012</td>
+          
+          
+          
+          <td>2213056.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2013</td>
+          
+          
+          
+          <td>2150768.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2014</td>
+          
+          
+          
+          <td>2106800.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2015</td>
+          
+          
+          
+          <td>2238704.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2016</td>
+          
+          
+          
+          <td>2015199.9</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2017</td>
+          
+          
+          
+          <td>2103136.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2018</td>
+          
+          
+          
+          <td>2399920.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2019</td>
+          
+          
+          
+          <td>2476864.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2020</td>
+          
+          
+          
+          <td>2407248.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2021</td>
+          
+          
+          
+          <td>2304752.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+        <tr>
+          
+          
+          <td>2022</td>
+          
+          
+          
+          <td>2292498.0</td>
+          
+          
+          
+          <td class="table-value">million_tonnes</td>
+          
+          
+        </tr>
+        
+      </tbody>
+    </table>
+    
+  </div>
+
+  
+  <div id="datatableFooter">
+    
+    
+    <p>Geographical Area: Montenegro</p>
+    
+    
+    <p>Unit of Measurement: data.million_tonnes</p>
+    
+    
+  </div>
+  
+
+</div>
+
+
+<section>
+
+  <p class="async-loading" data-img="/assets/img/loading-small.gif"></p>
+
+  <div class="async-loaded mt-4" style="display:none;">
+
+    <div style="display: none;">
+    <span id="table-alternative">For tabular data alternative see Table tab.</span>
+  </div>
+  <ul class="nav nav-tabs non-stacking-tabs data-view" role="tablist">
+    
+    <li role="presentation"
+      class="
+        nav-item
+        
+        
+      ">
+      <button
+        class="nav-link active"
+        data-bs-toggle="tab"
+        role="tab"
+        type="button"
+        
+          id="tab-chartview"
+          data-bs-target="#chartview"
+          aria-controls="chartview"
+          aria-describedby="table-alternative"
+          data-on="click"
+data-event-category="Tab change"
+data-event-action="Change data view"
+data-event-label="Change to Chart tab"
+
+        
+      >Chart</button>
+    </li>
+    
+    <li role="presentation"
+      class="
+        nav-item
+        
+        
+      ">
+      <button
+        class="nav-link "
+        data-bs-toggle="tab"
+        role="tab"
+        type="button"
+        
+          id="tab-tableview"
+          data-bs-target="#tableview"
+          aria-controls="tableview"
+          data-on="click"
+data-event-category="Tab change"
+data-event-action="Change data view"
+data-event-label="Change to Table tab"
+
+        
+      >Table</button>
+    </li>
+    
+  </ul>
+  
+    <div class="tab-content data-view">
+    
+      
+        <div role="tabpanel" class="tab-pane active" id="chartview">
+          
+
+    <div id="dataset-size-warning" style="display:none" role="alert">
+      <i class="fa fa-bolt"><span class="sr-only">Warning:</span></i>
+      There are too many datasets to show on the chart. Not all will be shown until you remove some selections.
+    </div>
+
+    
+    <div id="selectionsChart">
+      <figure role="group">
+        <div id="chart-canvas">
+          <h4 id="chart-heading" class="chart-title">Total greenhouse gas emissions per year</h4>
+          <div id="chart" class="plot-container">
+            <canvas
+    role="img"
+    aria-labelledby="chart-heading"
+    aria-describedby="table-alternative chart-annotations"
+    tabindex="0"
+ ></canvas>
+
+          </div>
+          <div id="plotLegend"></div>
+          
+
+
+
+<div id="selectionChartFooter" class="table-footer-text">
+  <h5 class="sr-only">Chart details</h5>
+    <dl>
+        
+
+        
+        <dt>Geographical Area:</dt>
+        <dd>Montenegro</dd>
+        
+
+        <dt class="data-controlled-footer-field unit-from-data">Unit of Measurement:</dt>
+        <dd class="data-controlled-footer-field unit-from-data"></dd>
+
+        
+
+        
+
+        
+
+        
+        
+        <dt
+          class="data-controlled-footer-field"
+          data-ts-attribute="COMMENT_TS"
+        >Explanation of data sources:</dt>
+        <dd
+          class="data-controlled-footer-field"
+          data-ts-attribute="COMMENT_TS"
+        ></dd>
+        
+        <dt
+          class="data-controlled-footer-field"
+          data-ts-attribute="DATA_LAST_UPDATE"
+        >Data last updated:</dt>
+        <dd
+          class="data-controlled-footer-field"
+          data-ts-attribute="DATA_LAST_UPDATE"
+        ></dd>
+        
+        
+    </dl>
+</div>
+
+        </div>
+      </figure>
+      <div id="chartSelectionDownload" class="clearfix">
+        <button id="btnSave" title="Download chart as image" class='btn btn-primary btn-download'>
+          Download Chart Image
+        </button><!-- 
+   --></div>
+    </div>
+
+
+
+        </div>
+      
+    
+      
+        <div role="tabpanel" class="tab-pane " id="tableview">
+          <div style="display: none;">
+            <span id="column-sort-info">Click to sort by this column</span>
+          </div>
+          <div id="selectionsTable"></div>
+<dl id="tableTargetLines" class="clearfix"></dl>
+
+
+
+
+<div id="selectionTableFooter" class="table-footer-text">
+  <h5 class="sr-only">Chart details</h5>
+    <dl>
+        
+
+        
+        <dt>Geographical Area:</dt>
+        <dd>Montenegro</dd>
+        
+
+        <dt class="data-controlled-footer-field unit-from-data">Unit of Measurement:</dt>
+        <dd class="data-controlled-footer-field unit-from-data"></dd>
+
+        
+
+        
+
+        
+
+        
+        
+        <dt
+          class="data-controlled-footer-field"
+          data-ts-attribute="COMMENT_TS"
+        >Explanation of data sources:</dt>
+        <dd
+          class="data-controlled-footer-field"
+          data-ts-attribute="COMMENT_TS"
+        ></dd>
+        
+        <dt
+          class="data-controlled-footer-field"
+          data-ts-attribute="DATA_LAST_UPDATE"
+        >Data last updated:</dt>
+        <dd
+          class="data-controlled-footer-field"
+          data-ts-attribute="DATA_LAST_UPDATE"
+        ></dd>
+        
+        
+    </dl>
+</div>
+
+<div id="tableSelectionDownload" class="clearfix"></div>
+
+        </div>
+      
+    
+  </div>
+  
+
+  </div>
+
+</section>
+
   
   <div class="mt-4">
 <ul class="nav nav-tabs" role="tablist">
@@ -518,7 +2838,52 @@ data-event-label="Change to indicator.sources tab"
   
       
         
+      
+      
+      <tr>
+        <th scope="row">Goal </th>
+        <td>
           
+            <p>Take urgent action to combat climate change and its impacts</p>
+
+          
+        </td>
+        </tr>
+        
+      
+  
+      
+        
+      
+      
+      <tr>
+        <th scope="row">Target </th>
+        <td>
+          
+            <p>Integrate climate change measures into national policies, strategies and planning</p>
+
+          
+        </td>
+        </tr>
+        
+      
+  
+      
+        
+      
+      
+      <tr>
+        <th scope="row">Indicator </th>
+        <td>
+          
+            <p>Total greenhouse gas emissions per year</p>
+
+          
+        </td>
+        </tr>
+        
+      
+  
       
         
           
@@ -527,13 +2892,20 @@ data-event-label="Change to indicator.sources tab"
           
       
         
-          
       
-        
-          
       
-        
+      <tr>
+        <th scope="row">Data providers </th>
+        <td>
           
+            <p>UNECE: https://w3.unece.org/SDG/</p>
+
+          
+        </td>
+        </tr>
+        
+      
+  
       
         
           
@@ -703,8 +3075,6 @@ data-event-label="Change to indicator.sources tab"
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js" integrity="sha256-Y26AMvaIfrZ1EQU49pf6H4QzVTrOI8m9wQYKkftBt4s=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/patternomaly@1.3.2/dist/patternomaly.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.2.2/dist/chartjs-plugin-annotation.min.js" integrity="sha256-XuHhf6q+GD7fscc96mTm/228GXf1Nn9wOYOE0EgeFzY=" crossorigin="anonymous"></script>
-
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.3/dist/html2canvas.js"></script>
@@ -722,12 +3092,12 @@ data-event-label="Change to indicator.sources tab"
 <script>translations['search'] = translations['search'] || {};
     translations['search']['search'] = 'Search';</script>
 
-<script src='/assets/js/sdg.js?v=20240630083044'></script>
+<script src='/assets/js/sdg.js?v=20240716094100'></script>
 
 
     
     
-    <script src="/assets/js/custom.js?v=20240630083044"></script><script>
+    <script src="/assets/js/custom.js?v=20240716094100"></script><script>
     new indicatorInit();
     new accessibilitySwitcher();
 </script>
