@@ -117,7 +117,7 @@ var translations = {
         ================================================== -->
 
         
-    <title>Urediti podatke: 2.4.1.a - Indikatori za Ciljeve održivog razvoja</title>
+    <title>Urediti podatke: 2.4.1.n - Indikatori za Ciljeve održivog razvoja</title>
 
 
 
@@ -140,7 +140,7 @@ var translations = {
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
         <link res="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" crossorigin="">
-        <link rel="stylesheet" href="/assets/css/style.css?v=20241130152039">
+        <link rel="stylesheet" href="/assets/css/style.css?v=20250302181058">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
           integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
           crossorigin=""/>
@@ -238,7 +238,7 @@ layout-data-editor
       Crnogorski
     </button>
     <ul class="dropdown-menu"><li>
-            <a class="dropdown-item" href="/en/2-4-1-a/data/">
+            <a class="dropdown-item" href="/en/2-4-1-n/data/">
               Engleski
             </a>
           </li></ul>
@@ -250,7 +250,7 @@ layout-data-editor
                     <span class="no-js-language-toggle"><div class="language-toggle-container d-flex">
     <i class="fa fa-globe language-toggle-globe-links"></i>
     <ul class="language-toggle-links list-unstyled list-inline"><li class="language-option-en list-inline-item">
-            <a class="language-toggle-link" href="/en/2-4-1-a/data/">
+            <a class="language-toggle-link" href="/en/2-4-1-n/data/">
                 Engleski
             </a>
         </li></ul>
@@ -270,7 +270,7 @@ data-event-label="high"
 
 <div id="main-content" class="container" role="main">
   <div class="row no-gutters">
-    <div class="col-md-12"><h1>Urediti podatke: 2.4.1.a</h1></div>
+    <div class="col-md-12"><h1>Urediti podatke: 2.4.1.n</h1></div>
   </div>
   <div class="row config-widgets">
     <div class="col-md-6 data-grid-buttons">
@@ -312,7 +312,7 @@ data-event-label="high"
       return false;
     }
     httpRequest.onreadystatechange = displaySpreadsheet;
-    httpRequest.open('GET', 'https://www.sdgmontenegro.me/sdg-production-data/untranslated/data/2-4-1-a.csv');
+    httpRequest.open('GET', 'https://www.sdgmontenegro.me/sdg-production-data/untranslated/data/2-4-1-n.csv');
     httpRequest.send();
   }
 
@@ -386,7 +386,7 @@ data-event-label="high"
   document.getElementById('export').onclick = function() {
     gridOptions.api.stopEditing();
     gridOptions.api.exportDataAsCsv({
-      fileName: 'indicator_2-4-1-a',
+      fileName: 'indicator_2-4-1-n',
     });
   }
 
@@ -464,12 +464,12 @@ data-event-label="high"
 <script>translations['search'] = translations['search'] || {};
     translations['search']['search'] = 'Pretraga';</script>
 
-<script src='/assets/js/sdg.js?v=20241130152039'></script>
+<script src='/assets/js/sdg.js?v=20250302181058'></script>
 
 
     
     
-    <script src="/assets/js/custom.js?v=20241130152039"></script><script>
+    <script src="/assets/js/custom.js?v=20250302181058"></script><script>
     new indicatorInit();
     new accessibilitySwitcher();
 </script>
