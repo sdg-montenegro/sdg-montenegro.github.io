@@ -179,22 +179,6 @@
           "description": "",
           "keywords": "",
           "href": "/en/2-4-1/",
-          "status": "notstarted"
-        },
-        {
-          "id": "2-4-1-N",
-          "title": "global_indicators.2-4-1-N-title",
-          "description": "",
-          "keywords": "",
-          "href": "/en/2-4-1-N/",
-          "status": "complete"
-        },
-        {
-          "id": "2-4-1-n",
-          "title": "Proportion of agricultural area under productive and sustainable agriculture",
-          "description": "",
-          "keywords": "",
-          "href": "/en/2-4-1-n/",
           "status": "complete"
         },
         {
@@ -1235,14 +1219,6 @@
           "description": "",
           "keywords": "",
           "href": "/en/11-2-1/",
-          "status": "notstarted"
-        },
-        {
-          "id": "11-2-1-a",
-          "title": "Proportion of population that has convenient access to public transport, by sex, age and persons with disabilities",
-          "description": "",
-          "keywords": "",
-          "href": "/en/11-2-1-a/",
           "status": "complete"
         },
         {
