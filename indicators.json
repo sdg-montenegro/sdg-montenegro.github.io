@@ -143,7 +143,7 @@
         },
         {
           "id": "2-2-2",
-          "title": "Prevalencija pothranjenosti (težina za visinu >+2 ili <-2 standardnog odstupanja od srednje vrijednosti Standarda SZO za rast djeteta) kod djece mlađe od 5 godina, po vrsti (zaostajanje u rastu i nedovoljna težina djece)",
+          "title": "Prevalencija pothranjenosti (težina za visinu >+2 ili <-2 standardnog odstupanja od srednje vrijednosti Standarda SZO za rast djeteta) kod djece mlađe od 5 godina, po vrsti (zaostajanje tjelesne težine u odnosu na visinu i gojaznost)",
           "description": "",
           "keywords": "",
           "href": "/2-2-2/",
@@ -495,7 +495,7 @@
         },
         {
           "id": "4-2-1",
-          "title": "Udio djece ispod 5 godina starosti koja su razvojno na dobrom putu u pogledu zdravlja, učenja i psihosocijalnog blagostanja, po polu",
+          "title": "Udio djece uzrasta 24–59 mjeseci koja su razvojno na dobrom putu u pogledu zdravlja, učenja i psihosocijalnog blagostanja, po polu",
           "description": "",
           "keywords": "",
           "href": "/4-2-1/",
@@ -527,7 +527,7 @@
         },
         {
           "id": "4-5-1",
-          "title": "Indeksi pariteta (žensko/muško, ruralno/urbano, donja/gornja petina bogatstva i drugi, poput statusa invalidnosti, autohtonih naroda i pogođenosti konfliktima kako podaci postanu dostupni)",
+          "title": "Indeksi pariteta (žensko/muško, ruralno/urbano, donja/gornja petina bogatstva i drugi, poput statusa invalidnosti, autohtonih naroda i pogođenosti konfliktima kako podaci postanu dostupni) za sve obrazovne indikatore sa ove liste koji se mogu razvrstati",
           "description": "",
           "keywords": "",
           "href": "/4-5-1/",
@@ -711,7 +711,7 @@
         },
         {
           "id": "6-2-1",
-          "title": "Udio stanovništva koji koristi sanitarne usluge kojima se upravlja na bezbjedan način, ukljućujući i mogućnost pranja ruku vodom i sapunom",
+          "title": "Udio stanovništva koji koristi sanitarne usluge kojima se upravlja na bezbjedan način, uključujući i mogućnost pranja ruku vodom i sapunom",
           "description": "",
           "keywords": "",
           "href": "/6-2-1/",
@@ -919,7 +919,7 @@
         },
         {
           "id": "8-7-1",
-          "title": "Udio i broj djece starosne dobi 5-17 godina koja su uključena u dječiji rad, po polu i godinama",
+          "title": "Udio i broj djece starosne dobi 5-17 godina koja su uključena u dječji rad, po polu i uzrastu",
           "description": "",
           "keywords": "",
           "href": "/8-7-1/",
@@ -1119,7 +1119,7 @@
         },
         {
           "id": "10-3-1",
-          "title": "Udio stanovništva koji je prijavio da se lično osjećao diskriminisano ili šikanirano u proteklih 12 mjeseci na osnovu diskriminišućeg razloga koji je zabranjen međunarodnim humanitarnim pravom",
+          "title": "Udio stanovništva koje je prijavilo da se lično osjećalo diskriminisano ili uznemiravano u prethodnih 12 mjeseci na osnovu diskriminacije zabranjene međunarodnim pravom o ljudskim pravima",
           "description": "",
           "keywords": "",
           "href": "/10-3-1/",
